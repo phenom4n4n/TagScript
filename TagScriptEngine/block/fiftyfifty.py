@@ -5,6 +5,22 @@ import random
 
 
 class FiftyFiftyBlock(Block):
+    """
+      50 is used to give a 50% chance of returning the payload given or 50% of returning a null.
+
+      **Usage:**  ``{50:<paylode>}``
+
+      **Aliases:**  ``5050, ?``
+
+      **Payload:**  ``string''
+
+      **Parameter:**  ``None``
+
+      **Examples:**  ::
+
+           I pick {if({5050:.}!=):heads|tails}
+           # I pick heads        
+    """
     def will_accept(self, ctx: Interpreter.Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "5050", dec == "50", dec == "?"])

@@ -48,6 +48,27 @@ class AllBlock(Block):
 
 
 class IfBlock(Block):
+    """
+      If block is used as a control block. The two payloads are separated by a |.
+      If the bool is True then the part before | is the payload. If the bool is False then the part after the | is the payload.
+
+      **Usage:** ``{if(<bool>):[payload]}``
+
+      **Aliases:** ``None``
+
+      **Payload:** ``string, None``
+
+      **Parameter:** ``Bool``
+
+      **Examples:** ::
+
+         #assume you mentioned yourself
+         {if({target(id)}=={user(id)}):You mentioned yourself.|You mentioned {target}}
+         #You mentioned youeself.
+
+        {if({args}==):You must provide some arguments for this tag.|Hello World!}
+
+    """
     def will_accept(self, ctx: Interpreter.Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return dec == "if"
