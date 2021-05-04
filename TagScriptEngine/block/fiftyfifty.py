@@ -12,14 +12,14 @@ class FiftyFiftyBlock(Block):
 
       **Aliases:**  ``5050, ?``
 
-      **Payload:**  ``string''
+      **Payload:**  string
 
-      **Parameter:**  ``None``
+      **Parameter:**  None
 
       **Examples:**  ::
 
            I pick {if({5050:.}!=):heads|tails}
-           # I pick heads        
+           # I pick heads
     """
     def will_accept(self, ctx: Interpreter.Context) -> bool:
         dec = ctx.verb.declaration.lower()

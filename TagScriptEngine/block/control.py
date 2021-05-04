@@ -24,6 +24,26 @@ def parse_into_output(payload, result):
 
 
 class AnyBlock(Block):
+    """
+      any block will return True is any of the given bool is True. If all the given bool is False, then the second part of the payload is returned.
+      The bools are separated by |
+
+      **Usage:** ``{any(<bool1|bool2|etc>):[payload]}``
+
+      **Aliases:** ``or``
+
+      **Payload:** string, None
+
+      **Parameter:** Bool
+
+      **Examples:** ::
+
+         {any({args}==hi|{args}==hello|{args}==heyy):Hello {user}|bye}
+         #assume {args} = hi
+         Hello sravan
+         #assume {args} = something
+         bye
+    """
     def will_accept(self, ctx: Interpreter.Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "any", dec == "or"])
@@ -36,6 +56,26 @@ class AnyBlock(Block):
 
 
 class AllBlock(Block):
+    """
+      all block will return True is all of the given bool is True. If any the given bool is False, then the second part of the payload is returned.
+      The bools are separated by |
+
+      **Usage:** ``{all(<bool1|bool2|etc>):[payload]}``
+
+      **Aliases:** ``and``
+
+      **Payload:** string, None
+
+      **Parameter:** Bool
+
+      **Examples:** ::
+
+         {all({args}>=100|{args}<=1000):You picked {args}|Provide a number between 100 and 1000}
+         #assume {args} = 52
+         Provide a number between 100 and 1000
+         #assume {args} = 282
+         You picked 282
+    """
     def will_accept(self, ctx: Interpreter.Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "all", dec == "and"])
@@ -56,9 +96,9 @@ class IfBlock(Block):
 
       **Aliases:** ``None``
 
-      **Payload:** ``string, None``
+      **Payload:** string, None
 
-      **Parameter:** ``Bool``
+      **Parameter:** Bool
 
       **Examples:** ::
 

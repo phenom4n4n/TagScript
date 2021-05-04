@@ -13,9 +13,9 @@ class StopBlock(Block):
 
     **Aliases:** ``halt, error``
 
-    **Payload:** bool
+    **Payload:** string, None
 
-    **Parameter:** string, None
+    **Parameter:** bool
 
     **Example:** ::
 

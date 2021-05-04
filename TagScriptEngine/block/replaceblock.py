@@ -3,6 +3,28 @@ from ..interface import Block
 
 
 class ReplaceBlock(Block):
+    """
+    replace block is used to replace the every instance of the 1st parameter with the 2nd parameter.
+    Both the parameter is seperated using ,
+
+    **Usage:** ``{replace(<1st parameter,2nd parameter>):<payload>}``
+
+    **Aliases:** ``None``
+
+    **Payload:** string
+
+    **Parameter:** string
+
+    **Examples:** ::
+
+        {replace(o,i):welcome to the server}
+        #welcime ti the server
+
+        {replace(1,6):{args}}
+        #assume {args} = 1637812
+        #6637862
+    """
+
     def will_accept(self, ctx: Interpreter.Context):
         dec = ctx.verb.declaration.lower()
         return dec == "replace"
@@ -19,6 +41,39 @@ class ReplaceBlock(Block):
 
 
 class PythonBlock(Block):
+    """
+    index is used to return the value of the string form the given list of strings.
+    index uses 0 as the starting for the payload and are always counded by the number of spaces.
+    if the string is not found in the given list of strings, then the value returned is -1.
+
+    in is used to check if the given string is present in the payload.
+    contains is used to check if the sting is present in the payload
+    but can only check one sting and will return false is exact match is not found.
+    both contains and in always returns a bool value
+
+    **Usage:** ``{index(<string>):<list of strings>}``
+               ``{in(<string>):<payload>}``
+               ``{contains(<string>):<payload>}``
+
+    **Aliases:** ``None``
+
+    **Payload:** int, bool
+
+    **Parameter:** string
+
+    **Examples:** ::
+
+        {index(food):I love to eat food. everyone does.}
+        #4
+
+        {in(apple pie):banana pie apple pie and other pie}
+        #true
+        {in(mute):How does it feel to be muted?}
+        #true
+
+        {contains(mute):How does it feel to be muted?}
+        #false  (because it has to be exactly mute and not muted)
+    """
     def will_accept(self, ctx: Interpreter.Context):
         dec = ctx.verb.declaration.lower()
         return dec in ("contains", "in", "index")

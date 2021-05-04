@@ -5,6 +5,26 @@ import random
 
 
 class RangeBlock(Block):
+    """
+    range block is used to return a random number from the given range of numbers in the payload.
+    rangef will return a tenths place decimal number
+
+    **Usage:** ``{range(seed):<lowset-highest>}``
+
+    **Aliases:** ``rangef``
+
+    **Payload:** int
+
+    **Parameter:** seed, None
+
+    **Examples:** ::
+
+        The number i pick is {range:10-300}
+        # The number i pick is 128
+
+        This time i pick {rangef:5-8}
+        # This time i pick 6.9
+    """
     def will_accept(self, ctx: Interpreter.Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "rangef", dec == "range"])
