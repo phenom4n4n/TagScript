@@ -1,5 +1,5 @@
-from .. import Interpreter
 from ..interface import Block
+from ..interpreter import Context
 
 
 class ReplaceBlock(Block):
@@ -24,12 +24,11 @@ class ReplaceBlock(Block):
         #assume {args} = 1637812
         #6637862
     """
-
-    def will_accept(self, ctx: Interpreter.Context):
+    def will_accept(self, ctx: Context):
         dec = ctx.verb.declaration.lower()
         return dec == "replace"
 
-    def process(self, ctx: Interpreter.Context):
+    def process(self, ctx: Context):
         if not ctx.verb.parameter or not ctx.verb.payload:
             return
         try:
@@ -74,11 +73,11 @@ class PythonBlock(Block):
         {contains(mute):How does it feel to be muted?}
         #false  (because it has to be exactly mute and not muted)
     """
-    def will_accept(self, ctx: Interpreter.Context):
+    def will_accept(self, ctx: Context):
         dec = ctx.verb.declaration.lower()
         return dec in ("contains", "in", "index")
 
-    def process(self, ctx: Interpreter.Context):
+    def process(self, ctx: Context):
         dec = ctx.verb.declaration.lower()
         if dec == "contains":
             return str(bool(ctx.verb.parameter in ctx.verb.payload.split())).lower()

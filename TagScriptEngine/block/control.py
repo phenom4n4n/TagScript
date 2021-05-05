@@ -1,7 +1,8 @@
-from .. import Interpreter, adapter
-from ..interface import Block
-from . import helper_parse_list_if, helper_parse_if, helper_split
 from typing import Optional
+
+from ..interface import Block
+from ..interpreter import Context
+from . import helper_parse_if, helper_parse_list_if, helper_split
 
 
 def parse_into_output(payload, result):
@@ -24,6 +25,7 @@ def parse_into_output(payload, result):
 
 
 class AnyBlock(Block):
+
     """
       any block will return True is any of the given bool is True. If all the given bool is False, then the second part of the payload is returned.
       The bools are separated by |
@@ -44,11 +46,11 @@ class AnyBlock(Block):
          #assume {args} = something
          bye
     """
-    def will_accept(self, ctx: Interpreter.Context) -> bool:
+    def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "any", dec == "or"])
 
-    def process(self, ctx: Interpreter.Context) -> Optional[str]:
+    def process(self, ctx: Context) -> Optional[str]:
         if ctx.verb.payload is None or ctx.verb.parameter is None:
             return None
         result = any(helper_parse_list_if(ctx.verb.parameter) or [])
@@ -76,11 +78,11 @@ class AllBlock(Block):
          #assume {args} = 282
          You picked 282
     """
-    def will_accept(self, ctx: Interpreter.Context) -> bool:
+    def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "all", dec == "and"])
 
-    def process(self, ctx: Interpreter.Context) -> Optional[str]:
+    def process(self, ctx: Context) -> Optional[str]:
         if ctx.verb.payload is None or ctx.verb.parameter is None:
             return None
         result = all(helper_parse_list_if(ctx.verb.parameter) or [])
@@ -109,11 +111,11 @@ class IfBlock(Block):
         {if({args}==):You must provide some arguments for this tag.|Hello World!}
 
     """
-    def will_accept(self, ctx: Interpreter.Context) -> bool:
+    def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return dec == "if"
 
-    def process(self, ctx: Interpreter.Context) -> Optional[str]:
+    def process(self, ctx: Context) -> Optional[str]:
         if ctx.verb.payload is None or ctx.verb.parameter is None:
             return None
         result = helper_parse_if(ctx.verb.parameter)

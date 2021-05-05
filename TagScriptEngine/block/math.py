@@ -1,22 +1,25 @@
 from __future__ import division
-from .. import Interpreter, adapter
-from ..interface import Block
-from typing import Optional
-from pyparsing import (
-    Literal,
-    CaselessLiteral,
-    Word,
-    Combine,
-    Group,
-    Optional,
-    ZeroOrMore,
-    Forward,
-    nums,
-    alphas,
-    oneOf,
-)
+
 import math
 import operator
+from typing import Optional
+
+from pyparsing import (
+    CaselessLiteral,
+    Combine,
+    Forward,
+    Group,
+    Literal,
+    Optional,
+    Word,
+    ZeroOrMore,
+    alphas,
+    nums,
+    oneOf,
+)
+
+from ..interface import Block
+from ..interpreter import Context
 
 
 class NumericStringParser(object):
@@ -144,11 +147,11 @@ NSP = NumericStringParser()
 
 
 class MathBlock(Block):
-    def will_accept(self, ctx: Interpreter.Context) -> bool:
+    def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "math", dec == "m", dec == "+", dec == "calc"])
 
-    def process(self, ctx: Interpreter.Context):
+    def process(self, ctx: Context):
         try:
             return str(NSP.eval(ctx.verb.payload.strip(" ")))
         except:
