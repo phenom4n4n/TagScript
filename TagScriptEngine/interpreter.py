@@ -6,30 +6,48 @@ from .interface import Block, Adapter
 from .verb import Verb
 
 __all__ = (
+    "Interpreter",
+    "Context",
+    "Response",
     "Node",
     "build_node_tree",
-    "Response",
-    "Context",
-    "Interpreter",
 )
 
+AdapterDict = Dict[str, Adapter]
 
 class Node:
-    def __init__(self, coordinates: Tuple[int, int], ver: Verb = None):
+    """
+    A low-level object representing a bracketed block.
+
+    Attributes
+    ----------
+    coordinates: Tuple[int, int]
+        The start and end position of the bracketed text block.
+    verb: Optional[Verb]
+        The determined Verb for this node.
+    output:
+        The `Block` processed output for this node.
+    """
+    def __init__(self, coordinates: Tuple[int, int], verb: Optional[Verb] = None):
         self.output: Optional[str] = None
-        self.verb: Verb = ver
-        self.coordinates: Tuple[int, int] = coordinates
+        self.verb = verb
+        self.coordinates = coordinates
 
     def __str__(self):
         return str(self.verb) + " at " + str(self.coordinates)
 
     def __repr__(self):
-        return "<Node verb={0.verb!r} coordinates={0.coordinates!r}>".format(self)
+        return f"<Node verb={self.verb!r} coordinates={self.coordinates!r} output={self.output!r}>"
 
 
 def build_node_tree(message: str) -> List[Node]:
     """
-    build_node_tree will take a message and get every possible match
+    Function that finds all possible nodes in a string.
+
+    Returns
+    -------
+    List[Node]
+        A list of all possible text bracket blocks.
     """
     nodes = []
     previous = r""
@@ -51,31 +69,25 @@ def build_node_tree(message: str) -> List[Node]:
 
 class Response:
     """
-    Response is another packaged class that contains data
-    relevent only to the current process, and should not leak out
-    into interpretation on other tags. This is also what is handed
-    after a finished response.
+    An object containing information on a completed TagScript process.
 
-    :attr:`actions` is a dict of recommended actions to take with the
-    response. Think of these as headers in HTTP.
-
-    :attr:`variables` is a dict intended to be shared between all the
-    blocks. For example if a variable is shared here, any block going
-    forward can look for it.
-
-    :attr:`body` is the finished, cleaned message with all verbs
-    interpreted.
+    Attributes
+    ----------
+    body: str
+        The cleaned message with all verbs interpreted.
+    actions: Dict[str, Any]
+        A dictionary that blocks can access and modify to define post-processing actions.
+    variables: Dict[str, Adapter]
+        A dictionary of variables that blocks such as the `LooseVariableGetterBlock` can access.
     """
 
-    def __init__(self):
+    def __init__(self, *, variables: AdapterDict = None):
         self.body: str = None
         self.actions: Dict[str, Any] = {}
-        self.variables: Dict[str, Adapter] = {}
+        self.variables: AdapterDict = variables if variables is not None else {}
 
     def __repr__(self):
-        return "<Response body={0.body!r} actions={0.actions!r} variables={0.variables!r}>".format(
-            self
-        )
+        return f"<Response body={self.body!r} actions={self.actions!r} variables={self.variables!r}>"
 
 
 class Context:
@@ -128,7 +140,7 @@ class Interpreter:
                 break
 
     def _solve(
-        self, message: str, node_ordered_list: List[Node], response: Response, charlimit: int, *, verb_limit: int = 2000
+        self, message: str, node_ordered_list: List[Node], response: Response, *, charlimit: int, verb_limit: int = 2000
     ):
         final = message
         total_work = 0
@@ -145,7 +157,7 @@ class Interpreter:
             if node.output is None:
                 continue  # If there was no value output, no need to text deform.
 
-            if charlimit is not None:
+            if charlimit:
                 total_work = total_work + len(
                     node.output
                 )  # Record how much we've done so far, for the rate limit
@@ -183,9 +195,10 @@ class Interpreter:
         return final
 
     def process(
-        self, message: str, seed_variables: Dict[str, Adapter] = None, charlimit: Optional[int] = None
+        self, message: str, seed_variables: AdapterDict = None, charlimit: Optional[int] = None
     ) -> Response:
-        """Processes a given TagScript string.
+        """
+        Processes a given TagScript string.
 
         Parameters
         ----------
@@ -210,17 +223,12 @@ class Interpreter:
         ProcessError
             An unexpected error occurred while processing blocks.
         """
-        response = Response()
-        message_input = message
+        response = Response(variables=seed_variables)
 
-        # Apply variables fed into `process`
-        if seed_variables is not None:
-            response.variables = {**response.variables, **seed_variables}
-
-        node_ordered_list = build_node_tree(message_input)
+        node_ordered_list = build_node_tree(message)
 
         try:
-            output = self._solve(message_input, node_ordered_list, response, charlimit)
+            output = self._solve(message, node_ordered_list, response, charlimit=charlimit)
         except TagScriptError:
             raise
         except Exception as error:

@@ -60,6 +60,7 @@ html_static_path = ['_static']
 
 # autodoc
 autodoc_default_options = {}
+autodoc_member_order = "bysource"
 
 # simple references within backticks
 default_role = "any"
