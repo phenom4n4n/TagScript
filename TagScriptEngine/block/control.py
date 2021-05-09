@@ -97,6 +97,7 @@ class IfBlock(Block):
     If the expression evaluates true, then the message before the ``|`` is returned, else the message after is returned.
 
     **Expression Operators:**
+
     +----------+--------------------------+---------+---------------------------------------------+
     | Operator | Check                    | Example | Description                                 |
     +==========+==========================+=========+=============================================+
