@@ -41,7 +41,27 @@ class Block:
         return None
 
     def process(self, ctx: "interpreter.Context") -> Optional[str]:
-        return None
+        """
+        Processes the block's actions for a given `Context`.
+
+        Subclasses must implement this.
+
+        Parameters
+        ----------
+        ctx: Context
+            The context object containing the TagScript `Verb`.
+
+        Returns
+        -------
+        Optional[str]
+            The block's processed value.
+
+        Raises
+        ------
+        NotImplementedError
+            The subclass did not implement this required method.
+        """
+        raise NotImplementedError
 
     def post_process(self, ctx: "interpreter.Context"):
         return None
