@@ -25,26 +25,25 @@ def parse_into_output(payload, result):
 
 
 class AnyBlock(Block):
-
     """
-      any block will return True is any of the given bool is True. If all the given bool is False, then the second part of the payload is returned.
-      The bools are separated by |
+    any block will return True is any of the given bool is True. If all the given bool is False, then the second part of the payload is returned.
+    The bools are separated by |
 
-      **Usage:** ``{any(<bool1|bool2|etc>):[payload]}``
+    **Usage:** ``{any(<bool1|bool2|etc>):[payload]}``
 
-      **Aliases:** ``or``
+    **Aliases:** ``or``
 
-      **Payload:** string, None
+    **Payload:** string, None
 
-      **Parameter:** Bool
+    **Parameter:** Bool
 
-      **Examples:** ::
+    **Examples:** ::
 
-         {any({args}==hi|{args}==hello|{args}==heyy):Hello {user}|bye}
-         #assume {args} = hi
-         Hello sravan
-         #assume {args} = something
-         bye
+        {any({args}==hi|{args}==hello|{args}==heyy):Hello {user}|bye}
+        #assume {args} = hi
+        Hello sravan
+        #assume {args} = something
+        bye
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
@@ -59,24 +58,24 @@ class AnyBlock(Block):
 
 class AllBlock(Block):
     """
-      all block will return True is all of the given bool is True. If any the given bool is False, then the second part of the payload is returned.
-      The bools are separated by |
+    all block will return True is all of the given bool is True. If any the given bool is False, then the second part of the payload is returned.
+    The bools are separated by |
 
-      **Usage:** ``{all(<bool1|bool2|etc>):[payload]}``
+    **Usage:** ``{all(<bool1|bool2|etc>):[payload]}``
 
-      **Aliases:** ``and``
+    **Aliases:** ``and``
 
-      **Payload:** string, None
+    **Payload:** string, None
 
-      **Parameter:** Bool
+    **Parameter:** Bool
 
-      **Examples:** ::
+    **Examples:** ::
 
-         {all({args}>=100|{args}<=1000):You picked {args}|Provide a number between 100 and 1000}
-         #assume {args} = 52
-         Provide a number between 100 and 1000
-         #assume {args} = 282
-         You picked 282
+        {all({args}>=100|{args}<=1000):You picked {args}|Provide a number between 100 and 1000}
+        #assume {args} = 52
+        Provide a number between 100 and 1000
+        #assume {args} = 282
+        You picked 282
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
@@ -91,25 +90,46 @@ class AllBlock(Block):
 
 class IfBlock(Block):
     """
-      If block is used as a control block. The two payloads are separated by a |.
-      If the bool is True then the part before | is the payload. If the bool is False then the part after the | is the payload.
+    The If block returns a message based on the passed expression to the parameter.
+    An expression is represented by two values compared with an operator.
 
-      **Usage:** ``{if(<bool>):[payload]}``
+    The payload is a required message that must be split by ``|``.
+    If the expression evaluates true, then the message before the ``|`` is returned, else the message after is returned.
 
-      **Aliases:** ``None``
+    **Expression Operators:**
+    +----------+--------------------------+---------+---------------------------------------------+
+    | Operator | Check                    | Example | Description                                 |
+    +==========+==========================+=========+=============================================+
+    | ``==``   | equality                 | a==a    | value 1 is equal to value 2                 |
+    +----------+--------------------------+---------+---------------------------------------------+
+    | ``!=``   | inequality               | a!=b    | value 1 is not equal to value 2             |
+    +----------+--------------------------+---------+---------------------------------------------+
+    | ``>``    | greater than             | 5>3     | value 1 is greater than value 2             |
+    +----------+--------------------------+---------+---------------------------------------------+
+    | ``<``    | less than                | 4<8     | value 1 is less than value 2                |
+    +----------+--------------------------+---------+---------------------------------------------+
+    | ``>=``   | greater than or equality | 10>=10  | value 1 is greater than or equal to value 2 |
+    +----------+--------------------------+---------+---------------------------------------------+
+    | ``<=``   | less than or equality    | 5<=6    | value 1 is less than or equal to value 2    |
+    +----------+--------------------------+---------+---------------------------------------------+
 
-      **Payload:** string, None
+    **Usage:** ``{if(<expression>):<message>]}``
 
-      **Parameter:** Bool
+    **Payload:** message
 
-      **Examples:** ::
+    **Parameter:** expression
 
-         #assume you mentioned yourself
-         {if({target(id)}=={user(id)}):You mentioned yourself.|You mentioned {target}}
-         #You mentioned youeself.
+    **Examples:** ::
 
-        {if({args}==):You must provide some arguments for this tag.|Hello World!}
+        {if({args}==63):You guessed it! The number I was thinking of was 63!|Too {if({args}<63):low|high}, try again.}
+        # if args is 63
+        # You guessed it! The number I was thinking of was 63!
 
+        # if args is 73
+        # Too low, try again.
+
+        # if args is 14
+        # Too high, try again.
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
