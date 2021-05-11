@@ -26,24 +26,28 @@ def parse_into_output(payload, result):
 
 class AnyBlock(Block):
     """
-    any block will return True is any of the given bool is True. If all the given bool is False, then the second part of the payload is returned.
-    The bools are separated by |
+    The any block checks that any of the passed expressions are true.
+    Multiple expressions can be passed to the parameter by splitting them with ``|``.
 
-    **Usage:** ``{any(<bool1|bool2|etc>):[payload]}``
+    The payload is a required message that must be split by ``|``.
+    If the expression evaluates true, then the message before the ``|`` is returned, else the message after is returned.
+
+    **Usage:** ``{any(<expression|expression|...>):<message>}``
 
     **Aliases:** ``or``
 
-    **Payload:** string, None
+    **Payload:** message
 
-    **Parameter:** Bool
+    **Parameter:** expression
 
     **Examples:** ::
 
-        {any({args}==hi|{args}==hello|{args}==heyy):Hello {user}|bye}
-        #assume {args} = hi
-        Hello sravan
-        #assume {args} = something
-        bye
+        {any({args}==hi|{args}==hello|{args}==heyy):Hello {user}!|How rude.}
+        # if {args} is hi
+        Hello sravan#0001!
+
+        # if {args} is what's up!
+        How rude.
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
@@ -58,28 +62,32 @@ class AnyBlock(Block):
 
 class AllBlock(Block):
     """
-    all block will return True is all of the given bool is True. If any the given bool is False, then the second part of the payload is returned.
-    The bools are separated by |
+    The all block checks that all of the passed expressions are true.
+    Multiple expressions can be passed to the parameter by splitting them with ``|``.
 
-    **Usage:** ``{all(<bool1|bool2|etc>):[payload]}``
+    The payload is a required message that must be split by ``|``.
+    If the expression evaluates true, then the message before the ``|`` is returned, else the message after is returned.
+
+    **Usage:** ``{all(<expression|expression|...>):<message>}``
 
     **Aliases:** ``and``
 
-    **Payload:** string, None
+    **Payload:** message
 
-    **Parameter:** Bool
+    **Parameter:** expression
 
     **Examples:** ::
 
-        {all({args}>=100|{args}<=1000):You picked {args}|Provide a number between 100 and 1000}
-        #assume {args} = 52
-        Provide a number between 100 and 1000
-        #assume {args} = 282
-        You picked 282
+        {all({args}>=100|{args}<=1000):You picked {args}.|You must provide a number between 100 and 1000.}
+        # if {args} is 52
+        You must provide a number between 100 and 1000.
+
+        # if {args} is 282
+        You picked 282.
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
-        return any([dec == "all", dec == "and"])
+        return dec in ("all", "and")
 
     def process(self, ctx: Context) -> Optional[str]:
         if ctx.verb.payload is None or ctx.verb.parameter is None:
@@ -90,7 +98,7 @@ class AllBlock(Block):
 
 class IfBlock(Block):
     """
-    The If block returns a message based on the passed expression to the parameter.
+    The if block returns a message based on the passed expression to the parameter.
     An expression is represented by two values compared with an operator.
 
     The payload is a required message that must be split by ``|``.
