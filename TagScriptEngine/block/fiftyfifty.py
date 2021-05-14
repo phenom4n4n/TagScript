@@ -7,20 +7,21 @@ from ..interpreter import Context
 
 class FiftyFiftyBlock(Block):
     """
-      50 is used to give a 50% chance of returning the payload given or 50% of returning a null.
+    The FiftyFifty block is give 50% chance for the given message to be the payload.
+    If the given message is not picked, then the payload is null.
 
-      **Usage:**  ``{50:<paylode>}``
+    **Usage:**  ``{50:<message>}``
 
-      **Aliases:**  ``5050, ?``
+    **Aliases:**  ``5050, ?``
 
-      **Payload:**  string
+    **Payload:**  message
 
-      **Parameter:**  None
+    **Parameter:**  None
 
-      **Examples:**  ::
+    **Examples:**  ::
 
-           I pick {if({5050:.}!=):heads|tails}
-           # I pick heads
+        I pick {if({5050:.}!=):heads|tails}
+        # I pick heads
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()

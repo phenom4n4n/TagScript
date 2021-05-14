@@ -7,14 +7,14 @@ from ..interpreter import Context
 
 class RangeBlock(Block):
     """
-    range block is used to return a random number from the given range of numbers in the payload.
-    rangef will return a tenths place decimal number
+    The range block is used to pick a random number from the given lowest and highest number.
+    The rangef works same as range but it picks the number upto it's tenth decimal place. 
 
-    **Usage:** ``{range(seed):<lowset-highest>}``
+    **Usage:** ``{range(seed):<lowest-highest>}``
 
     **Aliases:** ``rangef``
 
-    **Payload:** int
+    **Payload:** number
 
     **Parameter:** seed, None
 

@@ -4,14 +4,14 @@ from ..interpreter import Context
 
 class ReplaceBlock(Block):
     """
-    replace block is used to replace the every instance of the 1st parameter with the 2nd parameter.
-    Both the parameter is seperated using ,
+    The replace block is used to replace all the charater(s) from the 1st parameter with the charater(s) given in the 2nd parameter.
+    The 1st and 2nd parameter should be seperated using ``,``.
 
-    **Usage:** ``{replace(<1st parameter,2nd parameter>):<payload>}``
+    **Usage:** ``{replace(<1st parameter,2nd parameter>):<message>}``
 
     **Aliases:** ``None``
 
-    **Payload:** string
+    **Payload:** message
 
     **Parameter:** string
 
@@ -21,7 +21,7 @@ class ReplaceBlock(Block):
         #welcime ti the server
 
         {replace(1,6):{args}}
-        #assume {args} = 1637812
+        #if {args} = 1637812
         #6637862
     """
     def will_accept(self, ctx: Context):
