@@ -7,10 +7,13 @@ from ..interpreter import Context
 
 class RangeBlock(Block):
     """
-    The range block is used to pick a random number from the given lowest and highest number.
-    The rangef works same as range but it picks the number upto it's tenth decimal place. 
+    The range block picks a random number from a range of numbers seperated by ``-``. 
+    The number range is inclusive, so it can pick the starting/ending number as well. 
+    Using the rangef block will pick a number to the tenth decimal place.
 
-    **Usage:** ``{range(seed):<lowest-highest>}``
+    An optional seed can be provided to the parameter to always choose the same item when using that seed.
+
+    **Usage:** ``{range([seed]):<lowest-highest>}``
 
     **Aliases:** ``rangef``
 
@@ -20,11 +23,13 @@ class RangeBlock(Block):
 
     **Examples:** ::
 
-        The number i pick is {range:10-300}
-        # The number i pick is 128
+        Your lucky number is {range:10-30}!
+        # Your lucky number is 14!
+        # Your lucky number is 25!
 
-        This time i pick {rangef:5-8}
-        # This time i pick 6.9
+        {=(height):{rangef:5-7}}
+        I am guessing your height is {height}ft.
+        # I am guessing your height is 5.3ft.
     """
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
