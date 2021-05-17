@@ -31,6 +31,12 @@ Welcome to TagScript's documentation!
    adapter
    exceptions
 
+.. toctree::
+   :maxdepth: 2
+   :caption: credits
+
+   credits
+
 
 
 Indices and tables
