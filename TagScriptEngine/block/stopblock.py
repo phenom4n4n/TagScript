@@ -7,16 +7,16 @@ from . import helper_parse_if
 
 class StopBlock(Block):
     """
-    The stop block stops tag processing if the given parameter is true. If a
-    message is passed to the payload it will return that message.
+    The stop block stops tag processing if the given parameter is true. 
+    If a message is passed to the payload it will return that message.
 
     **Usage:** ``{stop(<bool>):[string]}``
 
     **Aliases:** ``halt, error``
 
-    **Payload:** bool
+    **Payload:** string, None
 
-    **Parameter:** string, None
+    **Parameter:** bool
 
     **Example:** ::
 
