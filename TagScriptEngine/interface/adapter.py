@@ -16,14 +16,14 @@ class Adapter:
 
     def get_value(self, ctx: "interpreter.Context") -> Optional[str]:
         """
-        Processes the adapter's actions for a given `Context`.
+        Processes the adapter's actions for a given :class:`~TagScriptEngine.interpreter.Context`.
 
         Subclasses must implement this.
 
         Parameters
         ----------
         ctx: Context
-            The context object containing the TagScript `Verb`.
+            The context object containing the TagScript :class:`~TagScriptEngine.verb.Verb`.
 
         Returns
         -------

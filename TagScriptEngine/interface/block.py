@@ -16,19 +16,19 @@ class Block:
 
     def will_accept(self, ctx: "interpreter.Context") -> Optional[bool]:
         """
-        Describes whether the block is valid for the given `Context`.
+        Describes whether the block is valid for the given :class:`~TagScriptEngine.interpreter.Context`.
 
         Subclasses must implement this.
 
         Parameters
         ----------
         ctx: Context
-            The context object containing the TagScript `Verb`.
+            The context object containing the TagScript :class:`~TagScriptEngine.verb.Verb`.
 
         Returns
         -------
         bool
-            Whether the block should be processed for this `Context`.
+            Whether the block should be processed for this :class:`~TagScriptEngine.interpreter.Context`.
 
         Raises
         ------
@@ -42,14 +42,14 @@ class Block:
 
     def process(self, ctx: "interpreter.Context") -> Optional[str]:
         """
-        Processes the block's actions for a given `Context`.
+        Processes the block's actions for a given :class:`~TagScriptEngine.interpreter.Context`.
 
         Subclasses must implement this.
 
         Parameters
         ----------
         ctx: Context
-            The context object containing the TagScript `Verb`.
+            The context object containing the TagScript :class:`~TagScriptEngine.verb.Verb`.
 
         Returns
         -------

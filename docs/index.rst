@@ -29,6 +29,7 @@ Welcome to TagScript's documentation!
    verb
    block
    adapter
+   utils
    exceptions
 
 .. toctree::

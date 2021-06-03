@@ -59,7 +59,7 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
 
 # autodoc
-autodoc_default_options = {}
+autodoc_default_options = {"show-inheritance": True}
 autodoc_member_order = "bysource"
 
 # simple references within backticks
