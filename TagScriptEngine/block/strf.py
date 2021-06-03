@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import Optional
 
 from ..interface import Block
@@ -10,20 +10,20 @@ class StrfBlock(Block):
         return ctx.verb.declaration == "strf"
 
     def process(self, ctx: Context) -> Optional[str]:
+        if not ctx.verb.payload:
+            return
+
         if ctx.verb.parameter:
             if ctx.verb.parameter.isdigit():
                 try:
-                    t = datetime.datetime.fromtimestamp(int(ctx.verb.parameter))
+                    t = datetime.fromtimestamp(int(ctx.verb.parameter))
                 except:
-                    return None
+                    return
             else:
                 try:
-                    t = datetime.datetime.strptime(ctx.verb.parameter, "%Y-%m-%d %H.%M.%S")
+                    t = datetime.strptime(ctx.verb.parameter, "%Y-%m-%d %H.%M.%S")
                 except ValueError:
-                    return None
+                    return
         else:
-            t = datetime.datetime.utcnow()
-        if ctx.verb.payload is not None:
-            return t.strftime(ctx.verb.payload)
-        else:
-            return None
+            t = datetime.utcnow()
+        return t.strftime(ctx.verb.payload)
