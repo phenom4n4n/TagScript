@@ -61,6 +61,7 @@ class EmbedBlock(Block):
     *   ``title``
     *   ``description``
     *   ``color``
+    *   ``url``
 
     **Usage:** ``{embed(<attribute>):<value>}``
 
@@ -84,7 +85,7 @@ class EmbedBlock(Block):
         {embed(title):my embed title}
     """
 
-    ALLOWED_ATTRIBUTES = ("description", "title", "color", "colour")
+    ALLOWED_ATTRIBUTES = ("description", "title", "color", "colour", "url")
 
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
