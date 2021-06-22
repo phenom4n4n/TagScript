@@ -12,6 +12,11 @@ def _sub_match(match: re.Match) -> str:
 def escape_content(string: str) -> str:
     """
     Escapes given input to avoid tampering with engine/block behavior.
+
+    Returns
+    -------
+    str
+        The escaped content.
     """
     if string is None:
         return

@@ -2,3 +2,5 @@ Sphinx
 sphinx-material
 sphinx_rtd_theme
 discord.py
+sphinx-book-theme
+karma-sphinx-theme

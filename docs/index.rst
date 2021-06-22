@@ -22,12 +22,21 @@ Welcome to TagScript's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Development Reference
+   :caption: API Reference
 
    interpreter
    interface
    verb
+   block
+   adapter
+   utils
    exceptions
+
+.. toctree::
+   :maxdepth: 2
+   :caption: credits
+
+   credits
 
 
 
