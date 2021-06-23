@@ -199,7 +199,7 @@ class GuildAdapter(AttributeAdapter):
             else:
                 humans += 1
         additional_attributes = {
-            "icon": ((getattr(guild, 'icon_url', None) or (getattr(guild, 'icon') ), False),
+            "icon": ((getattr(guild, 'icon_url', None) or (getattr(guild, 'icon') ), False)),
             "member_count": guild.member_count,
             "bots": bots,
             "humans": humans,
