@@ -26,6 +26,14 @@ def string_to_color(argument: str) -> Colour:
             raise BadColourArgument(arg)
         return method()
 
+def set_color(embed: Embed, attribute: str, value: str):
+    value = string_to_color(value)
+    setattr(embed, attribute, value)
+
+def set_dynamic_url(embed: Embed, attribute: str, value: str):
+    method = getattr(embed, f"set_{attribute}")
+    method(url=value)
+
 
 class EmbedBlock(Block):
     """
@@ -62,6 +70,8 @@ class EmbedBlock(Block):
     *   ``description``
     *   ``color``
     *   ``url``
+    *   ``thumbnail``
+    *   ``image``
 
     **Usage:** ``{embed(<attribute>):<value>}``
 
@@ -85,7 +95,15 @@ class EmbedBlock(Block):
         {embed(title):my embed title}
     """
 
-    ALLOWED_ATTRIBUTES = ("description", "title", "color", "colour", "url")
+    ATTRIBUTE_HANDLERS = {
+        "description": setattr,
+        "title": setattr,
+        "color": set_color,
+        "colour": set_color, 
+        "url": setattr,
+        "thumbnail": set_dynamic_url,
+        "image": set_dynamic_url,
+    }  
 
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
@@ -128,11 +146,13 @@ class EmbedBlock(Block):
                 embed.color = color
             return embed
 
-    @staticmethod
-    def update_embed(embed: Embed, attribute: str, value: str) -> Embed:
-        if attribute in ("color", "colour"):
-            value = string_to_color(value)
-        setattr(embed, attribute, value)
+    @classmethod
+    def update_embed(cls, embed: Embed, attribute: str, value: str) -> Embed:
+        handler = cls.ATTRIBUTE_HANDLERS[attribute]
+        try:
+            handler(embed, attribute, value)
+        except Exception as error:
+            raise EmbedParseError(error) from error
         return embed
 
     @staticmethod
@@ -158,7 +178,7 @@ class EmbedBlock(Block):
         try:
             if ctx.verb.parameter.startswith("{") and ctx.verb.parameter.endswith("}"):
                     embed = self.text_to_embed(ctx.verb.parameter)
-            elif lowered in self.ALLOWED_ATTRIBUTES and ctx.verb.payload:
+            elif lowered in self.ATTRIBUTE_HANDLERS and ctx.verb.payload:
                 embed = self.get_embed(ctx)
                 embed = self.update_embed(embed, lowered, ctx.verb.payload)
             else:
