@@ -66,6 +66,7 @@ class EmbedBlock(Block):
     **Manual**
 
     The following embed attributes can be set manually:
+
     *   ``title``
     *   ``description``
     *   ``color``
