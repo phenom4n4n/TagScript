@@ -1,6 +1,6 @@
 from random import choice
 
-from discord import Guild, Member, TextChannel
+from discord import TextChannel
 
 from ..interface import Adapter
 from ..utils import escape_content

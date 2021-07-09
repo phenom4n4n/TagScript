@@ -26,9 +26,11 @@ def string_to_color(argument: str) -> Colour:
             raise BadColourArgument(arg)
         return method()
 
+
 def set_color(embed: Embed, attribute: str, value: str):
     value = string_to_color(value)
     setattr(embed, attribute, value)
+
 
 def set_dynamic_url(embed: Embed, attribute: str, value: str):
     method = getattr(embed, f"set_{attribute}")
@@ -100,11 +102,11 @@ class EmbedBlock(Block):
         "description": setattr,
         "title": setattr,
         "color": set_color,
-        "colour": set_color, 
+        "colour": set_color,
         "url": setattr,
         "thumbnail": set_dynamic_url,
         "image": set_dynamic_url,
-    }  
+    }
 
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
@@ -178,7 +180,7 @@ class EmbedBlock(Block):
         lowered = ctx.verb.parameter.lower()
         try:
             if ctx.verb.parameter.startswith("{") and ctx.verb.parameter.endswith("}"):
-                    embed = self.text_to_embed(ctx.verb.parameter)
+                embed = self.text_to_embed(ctx.verb.parameter)
             elif lowered in self.ATTRIBUTE_HANDLERS and ctx.verb.payload:
                 embed = self.get_embed(ctx)
                 embed = self.update_embed(embed, lowered, ctx.verb.payload)

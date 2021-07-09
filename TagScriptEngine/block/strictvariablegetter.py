@@ -7,8 +7,8 @@ from ..interpreter import Context
 class StrictVariableGetterBlock(Block):
     """
     The strict variable block represents the adapters for any seeded or defined variables.
-    This variable implementation is considered "strict" since it checks whether the variable is 
-    valid during :meth:`will_accept` and is only processed if the declaration refers to a valid 
+    This variable implementation is considered "strict" since it checks whether the variable is
+    valid during :meth:`will_accept` and is only processed if the declaration refers to a valid
     variable.
 
     **Usage:** ``{<variable_name>([parameter]):[payload]}``

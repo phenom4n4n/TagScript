@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from typing import Optional, Any, Dict
 import time
+from typing import Any, Dict, Optional
 
 from discord.ext.commands import CooldownMapping
 
-from .helpers import helper_split
+from ..exceptions import CooldownExceeded
 from ..interface import Block
 from ..interpreter import Context
-from ..exceptions import CooldownExceeded
+from .helpers import helper_split
 
 __all__ = ("CooldownBlock",)
 
@@ -95,7 +95,10 @@ class CooldownBlock(Block):
         retry_after = bucket.update_rate_limit(current)
         if retry_after:
             retry_after = round(retry_after, 2)
-            message = message or f"The bucket for {key} has reached its cooldown. Retry in {retry_after} seconds."
+            message = (
+                message
+                or f"The bucket for {key} has reached its cooldown. Retry in {retry_after} seconds."
+            )
             message = message.replace("{key}", str(key)).replace("{retry_after}", str(retry_after))
             raise CooldownExceeded(message, bucket, key, retry_after)
         return ""

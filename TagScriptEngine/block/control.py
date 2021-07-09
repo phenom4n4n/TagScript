@@ -49,6 +49,7 @@ class AnyBlock(Block):
         # if {args} is what's up!
         How rude.
     """
+
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "any", dec == "or"])
@@ -85,6 +86,7 @@ class AllBlock(Block):
         # if {args} is 282
         You picked 282.
     """
+
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return dec in ("all", "and")
@@ -140,6 +142,7 @@ class IfBlock(Block):
         # if args is 14
         # Too high, try again.
     """
+
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return dec == "if"

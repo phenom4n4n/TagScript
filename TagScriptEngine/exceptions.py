@@ -9,6 +9,7 @@ __all__ = (
     "CooldownExceeded",
 )
 
+
 class TagScriptError(Exception):
     """Base class for all module errors."""
 
@@ -20,7 +21,7 @@ class WorkloadExceededError(TagScriptError):
 class ProcessError(TagScriptError):
     """
     Raised when an exception occurs during interpreter processing.
-    
+
     Attributes
     ----------
     original: Exception
@@ -66,6 +67,7 @@ class CooldownExceeded(TagScriptError):
     retry_after: float
         The seconds left til the cooldown ends.
     """
+
     def __init__(self, message: str, cooldown: Cooldown, key: str, retry_after: float):
         self.message = message
         self.cooldown = cooldown

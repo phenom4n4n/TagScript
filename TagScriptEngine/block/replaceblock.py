@@ -28,6 +28,7 @@ class ReplaceBlock(Block):
         {replace(, ):Test}
         # T e s t
     """
+
     def will_accept(self, ctx: Context):
         dec = ctx.verb.declaration.lower()
         return dec == "replace"
@@ -53,8 +54,8 @@ class PythonBlock(Block):
 
     ``index`` finds the location of the parameter in the payload, split by whitespace.
     If the parameter string is not found in the payload, it returns 1.
-    
-    index is used to return the value of the string form the given list of 
+
+    index is used to return the value of the string form the given list of
 
     **Usage:** ``{in(<string>):<payload>}``
 
@@ -83,6 +84,7 @@ class PythonBlock(Block):
         {index(pie):I love to eat food. everyone does.}
         # -1
     """
+
     def will_accept(self, ctx: Context):
         dec = ctx.verb.declaration.lower()
         return dec in ("contains", "in", "index")

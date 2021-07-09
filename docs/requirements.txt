@@ -1,6 +1,6 @@
+discord.py
+karma-sphinx-theme
 Sphinx
+sphinx-book-theme
 sphinx-material
 sphinx_rtd_theme
-discord.py
-sphinx-book-theme
-karma-sphinx-theme

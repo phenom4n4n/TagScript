@@ -22,6 +22,7 @@ class FiftyFiftyBlock(Block):
         I pick {if({5050:.}!=):heads|tails}
         # I pick heads
     """
+
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return dec in ("5050", "50", "?")

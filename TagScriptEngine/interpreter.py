@@ -2,7 +2,7 @@ from itertools import islice
 from typing import Any, Dict, List, Optional, Tuple
 
 from .exceptions import ProcessError, TagScriptError, WorkloadExceededError
-from .interface import Block, Adapter
+from .interface import Adapter, Block
 from .verb import Verb
 
 __all__ = (
@@ -14,6 +14,7 @@ __all__ = (
 )
 
 AdapterDict = Dict[str, Adapter]
+
 
 class Node:
     __slots__ = ("output", "verb", "coordinates")
@@ -30,6 +31,7 @@ class Node:
     output:
         The `Block` processed output for this node.
     """
+
     def __init__(self, coordinates: Tuple[int, int], verb: Optional[Verb] = None):
         self.output: Optional[str] = None
         self.verb = verb
@@ -94,7 +96,9 @@ class Response:
         self.extra_kwargs: Dict[str, Any] = extra_kwargs if extra_kwargs is not None else {}
 
     def __repr__(self):
-        return f"<Response body={self.body!r} actions={self.actions!r} variables={self.variables!r}>"
+        return (
+            f"<Response body={self.body!r} actions={self.actions!r} variables={self.variables!r}>"
+        )
 
 
 class Context:
@@ -151,7 +155,13 @@ class Interpreter:
                 break
 
     def _solve(
-        self, message: str, node_ordered_list: List[Node], response: Response, *, charlimit: int, verb_limit: int = 2000
+        self,
+        message: str,
+        node_ordered_list: List[Node],
+        response: Response,
+        *,
+        charlimit: int,
+        verb_limit: int = 2000,
     ):
         final = message
         total_work = 0
@@ -204,7 +214,12 @@ class Interpreter:
         return final
 
     def process(
-        self, message: str, seed_variables: AdapterDict = None, *, charlimit: Optional[int] = None, **kwargs
+        self,
+        message: str,
+        seed_variables: AdapterDict = None,
+        *,
+        charlimit: Optional[int] = None,
+        **kwargs,
     ) -> Response:
         """
         Processes a given TagScript string.

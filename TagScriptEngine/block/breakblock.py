@@ -7,12 +7,12 @@ from . import helper_parse_if
 
 class BreakBlock(Block):
     """
-    The break block will force the tag output to only be the payload of this block, if the passed 
+    The break block will force the tag output to only be the payload of this block, if the passed
     expresssion evaluates true.
     If no message is provided to the payload, the tag output will be empty.
 
-    This differs from the `StopBlock` as the stop block stops all tagscript processing and returns 
-    its message while the break block continues to process blocks. If command blocks exist after 
+    This differs from the `StopBlock` as the stop block stops all tagscript processing and returns
+    its message while the break block continues to process blocks. If command blocks exist after
     the break block, they will still execute.
 
     **Usage:** ``{break(<expression>):[message]}``
@@ -27,6 +27,7 @@ class BreakBlock(Block):
 
         {break({args}==):You did not provide any input.}
     """
+
     def will_accept(self, ctx: Context) -> bool:
         dec = ctx.verb.declaration.lower()
         return any([dec == "break", dec == "shortcircuit", dec == "short"])
