@@ -3,6 +3,8 @@ from typing import Optional
 __all__ = ("Verb",)
 
 class Verb:
+    __slots__ = ("declaration", "parameter", "payload", "parsed_string", "dec_depth", "dec_start", "skip_next")
+
     """
     Represents the passed TagScript block.
 

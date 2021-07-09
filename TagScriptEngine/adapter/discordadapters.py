@@ -15,6 +15,8 @@ __all__ = (
 
 
 class AttributeAdapter(Adapter):
+    __slots__ = ("object", "_attributes", "_methods")
+
     def __init__(self, base):
         self.object = base
         self._attributes = {

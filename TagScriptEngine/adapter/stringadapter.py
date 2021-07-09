@@ -4,6 +4,8 @@ from ..verb import Verb
 
 
 class StringAdapter(Adapter):
+    __slots__ = ("string", "escape_content")
+
     def __init__(self, string: str, *, escape: bool = False):
         self.string: str = str(string)
         self.escape_content = escape
