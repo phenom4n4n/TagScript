@@ -39,7 +39,7 @@ def helper_parse_if(if_string: str):
     return None
 
 
-def helper_split(split_string: str, easy: bool = True):
+def helper_split(split_string: str, easy: bool = True, *, maxsplit: int = None):
     """
     A helper method to universalize the splitting logic used in multiple
     blocks and adapters. Please use this wherever a verb needs content to
@@ -49,11 +49,11 @@ def helper_split(split_string: str, easy: bool = True):
     ["this, should", "work"]
     """
     if "|" in split_string:
-        return SPLIT_REGEX.split(split_string)
+        return SPLIT_REGEX.split(split_string, maxsplit)
     if easy and "~" in split_string:
-        return split_string.split("~")
+        return split_string.split("~", maxsplit)
     if easy and "," in split_string:
-        return split_string.split(",")
+        return split_string.split(",", maxsplit)
     return None
 
 

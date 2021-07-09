@@ -5,6 +5,7 @@ from .helpers import helper_parse_if, helper_parse_list_if, helper_split
 from .assign import AssignmentBlock
 from .breakblock import BreakBlock
 from .command import CommandBlock, OverrideBlock
+from .cooldown import CooldownBlock
 from .control import AllBlock, AnyBlock, IfBlock
 from .embedblock import EmbedBlock
 from .fiftyfifty import FiftyFiftyBlock
@@ -32,6 +33,7 @@ __all__ = (
     "BlacklistBlock",
     "BreakBlock",
     "CommandBlock",
+    "CooldownBlock",
     "EmbedBlock",
     "FiftyFiftyBlock",
     "IfBlock",

@@ -1,9 +1,12 @@
+from discord.ext.commands import Cooldown
+
 __all__ = (
     "TagScriptError",
     "WorkloadExceededError",
     "ProcessError",
     "EmbedParseError",
     "BadColourArgument",
+    "CooldownExceeded",
 )
 
 class TagScriptError(Exception):
@@ -46,3 +49,26 @@ class BadColourArgument(EmbedParseError):
     def __init__(self, argument: str):
         self.argument = argument
         super().__init__(f'Colour "{argument}" is invalid.')
+
+
+class CooldownExceeded(TagScriptError):
+    """
+    Raised by the cooldown block when a cooldown is exceeded.
+
+    Attributes
+    ----------
+    message: str
+        The cooldown error message.
+    cooldown: discord.ext.commands.Cooldown
+        The cooldown bucket with information on the cooldown.
+    key: str
+        The cooldown key that reached its cooldown.
+    retry_after: float
+        The seconds left til the cooldown ends.
+    """
+    def __init__(self, message: str, cooldown: Cooldown, key: str, retry_after: float):
+        self.message = message
+        self.cooldown = cooldown
+        self.key = key
+        self.retry_after = retry_after
+        super().__init__(message)

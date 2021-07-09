@@ -16,6 +16,8 @@ __all__ = (
 AdapterDict = Dict[str, Adapter]
 
 class Node:
+    __slots__ = ("output", "verb", "coordinates")
+
     """
     A low-level object representing a bracketed block.
 
@@ -68,6 +70,8 @@ def build_node_tree(message: str) -> List[Node]:
 
 
 class Response:
+    __slots__ = ("body", "actions", "variables", "extra_kwargs")
+
     """
     An object containing information on a completed TagScript process.
 
@@ -79,18 +83,23 @@ class Response:
         A dictionary that blocks can access and modify to define post-processing actions.
     variables: Dict[str, Adapter]
         A dictionary of variables that blocks such as the `LooseVariableGetterBlock` can access.
+    extra_kwargs : Dict[str, Any]
+        A dictionary of extra keyword arguments that blocks can use to define their own behavior.
     """
 
-    def __init__(self, *, variables: AdapterDict = None):
+    def __init__(self, *, variables: AdapterDict = None, extra_kwargs: Dict[str, Any] = None):
         self.body: str = None
         self.actions: Dict[str, Any] = {}
         self.variables: AdapterDict = variables if variables is not None else {}
+        self.extra_kwargs: Dict[str, Any] = extra_kwargs if extra_kwargs is not None else {}
 
     def __repr__(self):
         return f"<Response body={self.body!r} actions={self.actions!r} variables={self.variables!r}>"
 
 
 class Context:
+    __slots__ = ("verb", "original_message", "interpreter", "response")
+
     """
     An object containing data on the TagScript block processed by the interpreter.
     This class is passed to adapters and blocks during processing.
@@ -116,6 +125,8 @@ class Context:
 
 
 class Interpreter:
+    __slots__ = ("blocks",)
+
     """
     The TagScript interpreter.
 
@@ -158,9 +169,7 @@ class Interpreter:
                 continue  # If there was no value output, no need to text deform.
 
             if charlimit:
-                total_work = total_work + len(
-                    node.output
-                )  # Record how much we've done so far, for the rate limit
+                total_work += len(node.output)
                 if total_work > charlimit:
                     raise WorkloadExceededError(
                         "The TSE interpreter had its workload exceeded. The total characters "
@@ -195,7 +204,7 @@ class Interpreter:
         return final
 
     def process(
-        self, message: str, seed_variables: AdapterDict = None, charlimit: Optional[int] = None
+        self, message: str, seed_variables: AdapterDict = None, *, charlimit: Optional[int] = None, **kwargs
     ) -> Response:
         """
         Processes a given TagScript string.
@@ -208,6 +217,8 @@ class Interpreter:
             A dictionary containing strings to adapters to provide context variables for processing.
         charlimit: int
             The maximum characters to process.
+        kwargs: Dict[str, Any]
+            Additional keyword arguments that may be used by blocks during processing.
 
         Returns
         -------
@@ -223,7 +234,7 @@ class Interpreter:
         ProcessError
             An unexpected error occurred while processing blocks.
         """
-        response = Response(variables=seed_variables)
+        response = Response(variables=seed_variables, extra_kwargs=kwargs)
 
         node_ordered_list = build_node_tree(message)
 
