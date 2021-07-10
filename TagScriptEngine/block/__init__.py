@@ -1,5 +1,5 @@
 # isort: off
-from .helpers import helper_parse_if, helper_parse_list_if, helper_split
+from .helpers import *
 
 # isort: on
 from .assign import AssignmentBlock
@@ -24,6 +24,7 @@ from .substr import SubstringBlock
 from .urlencodeblock import URLEncodeBlock
 
 __all__ = (
+    "implicit_bool",
     "helper_parse_if",
     "helper_parse_list_if",
     "helper_split",
