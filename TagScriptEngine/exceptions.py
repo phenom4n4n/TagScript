@@ -27,10 +27,16 @@ class ProcessError(TagScriptError):
     ----------
     original: Exception
         The original exception that occurred during processing.
+    response: Response
+        The incomplete response that was being processed when the exception occurred.
+    interpreter: Interpreter
+        The interpreter used for processing.
     """
 
-    def __init__(self, error: Exception):
+    def __init__(self, error: Exception, response, interpreter):
         self.original = error
+        self.response = response
+        self.interpreter = interpreter
         super().__init__(error)
 
 

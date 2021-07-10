@@ -3,10 +3,12 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from .exceptions import ProcessError, StopError, TagScriptError, WorkloadExceededError
 from .interface import Adapter, Block
+from .utils import maybe_await
 from .verb import Verb
 
 __all__ = (
     "Interpreter",
+    "AsyncInterpreter",
     "Context",
     "Response",
     "Node",
@@ -233,6 +235,15 @@ class Interpreter:
             self._translate_nodes(node_ordered_list, index, start, differential)
         return final
 
+    @staticmethod
+    def _return_response(response: Response, output: str) -> Response:
+        if response.body is None:
+            response.body = output.strip()
+        else:
+            # Dont override an overridden response.
+            response.body = response.body.strip()
+        return response
+
     def process(
         self,
         message: str,
@@ -270,19 +281,110 @@ class Interpreter:
             An unexpected error occurred while processing blocks.
         """
         response = Response(variables=seed_variables, extra_kwargs=kwargs)
-
         node_ordered_list = build_node_tree(message)
-
         try:
             output = self._solve(message, node_ordered_list, response, charlimit=charlimit)
         except TagScriptError:
             raise
         except Exception as error:
-            raise ProcessError(error) from error
+            raise ProcessError(error, response, self) from error
+        return self._return_response(response, output)
 
-        # Dont override an overridden response.
-        if response.body is None:
-            response.body = output.strip("\n ")
-        else:
-            response.body = response.body.strip("\n ")
-        return response
+
+class AsyncInterpreter(Interpreter):
+    """
+    An asynchronous subclass of `Interpreter` that allows blocks to implement asynchronous methods.
+    Synchronous blocks are still supported.
+
+    Attributes
+    ----------
+    blocks: List[Block]
+        A list of blocks to be used for TagScript processing.
+    """
+
+    async def _get_acceptors(self, ctx: Context) -> List[Block]:
+        return [b for b in self.blocks if await maybe_await(b.will_accept, ctx)]
+
+    async def _process_blocks(self, ctx: Context, node: Node) -> Optional[str]:
+        acceptors = await self._get_acceptors(ctx)
+        for b in acceptors:
+            value = await maybe_await(b.process, ctx)
+            if value is not None:  # Value found? We're done here.
+                value = str(value)
+                node.output = value
+                return value
+
+    async def _solve(
+        self,
+        message: str,
+        node_ordered_list: List[Node],
+        response: Response,
+        *,
+        charlimit: int,
+        verb_limit: int = 2000,
+    ):
+        final = message
+        total_work = 0
+
+        for index, node in enumerate(node_ordered_list):
+            start, end = node.coordinates
+            ctx = self._get_context(
+                node, final, response=response, original_message=message, verb_limit=verb_limit
+            )
+            try:
+                output = await self._process_blocks(ctx, node)
+            except StopError as exc:
+                return final[:start] + exc.message
+            if output is None:
+                continue  # If there was no value output, no need to text deform.
+
+            total_work = self._check_workload(charlimit, total_work, output)
+            final, differential = self._text_deform(start, end, final, output)
+            self._translate_nodes(node_ordered_list, index, start, differential)
+        return final
+
+    async def process(
+        self,
+        message: str,
+        seed_variables: AdapterDict = None,
+        *,
+        charlimit: Optional[int] = None,
+        **kwargs,
+    ) -> Response:
+        """
+        Asynchronously process a given TagScript string.
+
+        Parameters
+        ----------
+        message: str
+            A TagScript string to be processed.
+        seed_variables: Dict[str, Adapter]
+            A dictionary containing strings to adapters to provide context variables for processing.
+        charlimit: int
+            The maximum characters to process.
+        kwargs: Dict[str, Any]
+            Additional keyword arguments that may be used by blocks during processing.
+
+        Returns
+        -------
+        Response
+            A response object containing the processed body, actions and variables.
+
+        Raises
+        ------
+        TagScriptError
+            A block intentionally raised an exception, most likely due to invalid user input.
+        WorkloadExceededError
+            Signifies the interpreter reached the character limit, if one was provided.
+        ProcessError
+            An unexpected error occurred while processing blocks.
+        """
+        response = Response(variables=seed_variables, extra_kwargs=kwargs)
+        node_ordered_list = build_node_tree(message)
+        try:
+            output = await self._solve(message, node_ordered_list, response, charlimit=charlimit)
+        except TagScriptError:
+            raise
+        except Exception as error:
+            raise ProcessError(error, response, self) from error
+        return self._return_response(response, output)
