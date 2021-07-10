@@ -1,5 +1,6 @@
 from typing import Optional
 
+from ..exceptions import StopError
 from ..interface import Block
 from ..interpreter import Context
 from . import helper_parse_if
@@ -32,6 +33,5 @@ class StopBlock(Block):
         if ctx.verb.parameter is None:
             return None
         if helper_parse_if(ctx.verb.parameter):
-            ctx.response.actions["TSE_STOP"] = True
-            return "" if ctx.verb.payload is None else ctx.verb.payload
+            raise StopError("" if ctx.verb.payload is None else ctx.verb.payload)
         return ""

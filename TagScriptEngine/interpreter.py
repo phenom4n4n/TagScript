@@ -1,7 +1,7 @@
 from itertools import islice
 from typing import Any, Dict, List, Optional, Tuple
 
-from .exceptions import ProcessError, TagScriptError, WorkloadExceededError
+from .exceptions import ProcessError, StopError, TagScriptError, WorkloadExceededError
 from .interface import Adapter, Block
 from .verb import Verb
 
@@ -17,8 +17,6 @@ AdapterDict = Dict[str, Adapter]
 
 
 class Node:
-    __slots__ = ("output", "verb", "coordinates")
-
     """
     A low-level object representing a bracketed block.
 
@@ -31,6 +29,8 @@ class Node:
     output:
         The `Block` processed output for this node.
     """
+
+    __slots__ = ("output", "verb", "coordinates")
 
     def __init__(self, coordinates: Tuple[int, int], verb: Optional[Verb] = None):
         self.output: Optional[str] = None
@@ -72,8 +72,6 @@ def build_node_tree(message: str) -> List[Node]:
 
 
 class Response:
-    __slots__ = ("body", "actions", "variables", "extra_kwargs")
-
     """
     An object containing information on a completed TagScript process.
 
@@ -89,6 +87,8 @@ class Response:
         A dictionary of extra keyword arguments that blocks can use to define their own behavior.
     """
 
+    __slots__ = ("body", "actions", "variables", "extra_kwargs")
+
     def __init__(self, *, variables: AdapterDict = None, extra_kwargs: Dict[str, Any] = None):
         self.body: str = None
         self.actions: Dict[str, Any] = {}
@@ -102,8 +102,6 @@ class Response:
 
 
 class Context:
-    __slots__ = ("verb", "original_message", "interpreter", "response")
-
     """
     An object containing data on the TagScript block processed by the interpreter.
     This class is passed to adapters and blocks during processing.
@@ -118,6 +116,8 @@ class Context:
         The interpreter processing the TagScript.
     """
 
+    __slots__ = ("verb", "original_message", "interpreter", "response")
+
     def __init__(self, verb: Verb, res: Response, interpreter, og: str):
         self.verb: Verb = verb
         self.original_message: str = og
@@ -129,8 +129,6 @@ class Context:
 
 
 class Interpreter:
-    __slots__ = ("blocks",)
-
     """
     The TagScript interpreter.
 
@@ -140,19 +138,78 @@ class Interpreter:
         A list of blocks to be used for TagScript processing.
     """
 
+    __slots__ = ("blocks",)
+
     def __init__(self, blocks: List[Block]):
         self.blocks: List[Block] = blocks
 
     def __repr__(self):
-        return "<Interpreter blocks={0.blocks!r}>".format(self)
+        return f"<{type(self).__name__} blocks={self.blocks!r}>"
 
-    def _get_acceptors(self, ctx: Context, node: Node):
-        acceptors: List[Block] = [b for b in self.blocks if b.will_accept(ctx)]
+    def _get_context(
+        self,
+        node: Node,
+        final: str,
+        start: int,
+        end: int,
+        *,
+        response: Response,
+        original_message: str,
+        verb_limit: int,
+    ) -> Context:
+        # Get the updated verb string from coordinates and make the context
+        node.verb = Verb(final[start : end + 1], limit=verb_limit)
+        return Context(node.verb, response, self, original_message)
+
+    def _get_acceptors(self, ctx: Context) -> List[Block]:
+        return [b for b in self.blocks if b.will_accept(ctx)]
+
+    def _process_blocks(self, ctx: Context, node: Node) -> Optional[str]:
+        acceptors = self._get_acceptors(ctx)
         for b in acceptors:
             value = b.process(ctx)
             if value is not None:  # Value found? We're done here.
+                value = str(value)
                 node.output = value
-                break
+                return value
+
+    @staticmethod
+    def _check_workload(charlimit: int, total_work: int, output: str) -> Optional[int]:
+        if not charlimit:
+            return
+        total_work += len(output)
+        if total_work > charlimit:
+            raise WorkloadExceededError(
+                "The TSE interpreter had its workload exceeded. The total characters "
+                f"attempted were {total_work}/{charlimit}"
+            )
+        return total_work
+
+    @staticmethod
+    def _text_deform(start: int, end: int, final: str, output: str) -> Tuple[str, int]:
+        message_slice_len = (end + 1) - start
+        replacement_len = len(output)
+        differential = (
+            replacement_len - message_slice_len
+        )  # The change in size of `final` after the change is applied
+        final = final[:start] + output + final[end + 1 :]
+        return final, differential
+
+    @staticmethod
+    def _translate_nodes(node_ordered_list: List[Node], index: int, start: int, differential: int):
+        for future_n in islice(node_ordered_list, index + 1, None):
+            new_start = None
+            new_end = None
+            if future_n.coordinates[0] > start:
+                new_start = future_n.coordinates[0] + differential
+            else:
+                new_start = future_n.coordinates[0]
+
+            if future_n.coordinates[1] > start:
+                new_end = future_n.coordinates[1] + differential
+            else:
+                new_end = future_n.coordinates[1]
+            future_n.coordinates = (new_start, new_end)
 
     def _solve(
         self,
@@ -166,51 +223,27 @@ class Interpreter:
         final = message
         total_work = 0
 
-        for i, node in enumerate(node_ordered_list):
-            # Get the updated verb string from coordinates and make the context
-            node.verb = Verb(
-                final[node.coordinates[0] : node.coordinates[1] + 1], limit=verb_limit
+        for index, node in enumerate(node_ordered_list):
+            start, end = node.coordinates
+            ctx = self._get_context(
+                node,
+                final,
+                start,
+                end,
+                response=response,
+                original_message=message,
+                verb_limit=verb_limit,
             )
-            ctx = Context(node.verb, response, self, message)
-
-            # Get all blocks that will attempt to take this
-            self._get_acceptors(ctx, node)
-            if node.output is None:
+            try:
+                output = self._process_blocks(ctx, node)
+            except StopError as exc:
+                return final[:start] + exc.message
+            if output is None:
                 continue  # If there was no value output, no need to text deform.
 
-            if charlimit:
-                total_work += len(node.output)
-                if total_work > charlimit:
-                    raise WorkloadExceededError(
-                        "The TSE interpreter had its workload exceeded. The total characters "
-                        f"attempted were {total_work}/{charlimit}"
-                    )
-
-            start, end = node.coordinates
-            message_slice_len = (end + 1) - start
-            replacement_len = len(node.output)
-            differential = (
-                replacement_len - message_slice_len
-            )  # The change in size of `final` after the change is applied
-            if "TSE_STOP" in response.actions:
-                return final[:start] + node.output
-            final = final[:start] + node.output + final[end + 1 :]
-
-            # if each coordinate is later than `start` then it needs the diff applied.
-            for future_n in islice(node_ordered_list, i + 1, None):
-                new_start = None
-                new_end = None
-                if future_n.coordinates[0] > start:
-                    new_start = future_n.coordinates[0] + differential
-                else:
-                    new_start = future_n.coordinates[0]
-
-                if future_n.coordinates[1] > start:
-                    new_end = future_n.coordinates[1] + differential
-                else:
-                    new_end = future_n.coordinates[1]
-                future_n.coordinates = (new_start, new_end)
-
+            total_work = self._check_workload(charlimit, total_work, output)
+            final, differential = self._text_deform(start, end, final, output)
+            self._translate_nodes(node_ordered_list, index, start, differential)
         return final
 
     def process(

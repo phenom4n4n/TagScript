@@ -6,6 +6,7 @@ __all__ = (
     "ProcessError",
     "EmbedParseError",
     "BadColourArgument",
+    "StopError",
     "CooldownExceeded",
 )
 
@@ -52,7 +53,22 @@ class BadColourArgument(EmbedParseError):
         super().__init__(f'Colour "{argument}" is invalid.')
 
 
-class CooldownExceeded(TagScriptError):
+class StopError(TagScriptError):
+    """
+    Raised by the StopBlock to stop processing.
+
+    Attributes
+    ----------
+    message: str
+        The stop error message.
+    """
+
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)
+
+
+class CooldownExceeded(StopError):
     """
     Raised by the cooldown block when a cooldown is exceeded.
 
@@ -69,7 +85,6 @@ class CooldownExceeded(TagScriptError):
     """
 
     def __init__(self, message: str, cooldown: Cooldown, key: str, retry_after: float):
-        self.message = message
         self.cooldown = cooldown
         self.key = key
         self.retry_after = retry_after
