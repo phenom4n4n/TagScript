@@ -147,17 +147,10 @@ class Interpreter:
         return f"<{type(self).__name__} blocks={self.blocks!r}>"
 
     def _get_context(
-        self,
-        node: Node,
-        final: str,
-        start: int,
-        end: int,
-        *,
-        response: Response,
-        original_message: str,
-        verb_limit: int,
+        self, node: Node, final: str, *, response: Response, original_message: str, verb_limit: int
     ) -> Context:
         # Get the updated verb string from coordinates and make the context
+        start, end = node.coordinates
         node.verb = Verb(final[start : end + 1], limit=verb_limit)
         return Context(node.verb, response, self, original_message)
 
@@ -226,13 +219,7 @@ class Interpreter:
         for index, node in enumerate(node_ordered_list):
             start, end = node.coordinates
             ctx = self._get_context(
-                node,
-                final,
-                start,
-                end,
-                response=response,
-                original_message=message,
-                verb_limit=verb_limit,
+                node, final, response=response, original_message=message, verb_limit=verb_limit
             )
             try:
                 output = self._process_blocks(ctx, node)
