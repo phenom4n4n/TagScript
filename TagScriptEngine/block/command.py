@@ -24,11 +24,11 @@ SOFTWARE.
 
 from typing import Optional
 
-from ..interface import Block
+from ..interface import Block, verb_required_block
 from ..interpreter import Context
 
 
-class CommandBlock(Block):
+class CommandBlock(verb_required_block(True, payload=True)):
     """
     Run a command as if the tag invoker had ran it. Only 3 command
     blocks can be used in a tag.
@@ -50,13 +50,9 @@ class CommandBlock(Block):
         # invokes ban command on the pinged user with the reason as "Chatflood/spam"
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "c", dec == "com", dec == "command"])
+    ACCEPTED_NAMES = ("c", "com", "command")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if not ctx.verb.payload:
-            return None
         command = ctx.verb.payload.strip()
         actions = ctx.response.actions.get("commands")
         if actions:
@@ -99,9 +95,7 @@ class OverrideBlock(Block):
         # overrides commands that require the mod role or have user permission requirements
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec == "override"
+    ACCEPTED_NAMES = ("override",)
 
     def process(self, ctx: Context) -> Optional[str]:
         param = ctx.verb.parameter

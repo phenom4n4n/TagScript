@@ -28,11 +28,9 @@ class BreakBlock(Block):
         {break({args}==):You did not provide any input.}
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "break", dec == "shortcircuit", dec == "short"])
+    ACCEPTED_NAMES = ("break", "shortcircuit", "short")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if helper_parse_if(ctx.verb.parameter) == True:
+        if helper_parse_if(ctx.verb.parameter):
             ctx.response.body = ctx.verb.payload if ctx.verb.payload != None else ""
         return ""
