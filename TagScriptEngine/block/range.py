@@ -1,11 +1,11 @@
 import random
 from typing import Optional
 
-from ..interface import Block
+from ..interface import verb_required_block
 from ..interpreter import Context
 
 
-class RangeBlock(Block):
+class RangeBlock(verb_required_block(True, payload=True)):
     """
     The range block picks a random number from a range of numbers seperated by ``-``.
     The number range is inclusive, so it can pick the starting/ending number as well.
@@ -32,9 +32,7 @@ class RangeBlock(Block):
         # I am guessing your height is 5.3ft.
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "rangef", dec == "range"])
+    ACCEPTED_NAME = ("rangef", "range")
 
     def process(self, ctx: Context) -> Optional[str]:
         try:

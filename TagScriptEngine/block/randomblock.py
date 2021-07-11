@@ -1,11 +1,11 @@
 import random
 from typing import Optional
 
-from ..interface import Block
+from ..interface import verb_required_block
 from ..interpreter import Context
 
 
-class RandomBlock(Block):
+class RandomBlock(verb_required_block(True, payload=True)):
     """
     Pick a random item from a list of strings, split by either ``~``
     or ``,``. An optional seed can be provided to the parameter to
@@ -33,13 +33,9 @@ class RandomBlock(Block):
         # Assigns a random insult to the insult variable
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec in ("random", "#", "rand")
+    ACCEPTED_NAMES = ("random", "#", "rand")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if ctx.verb.payload is None:
-            return None
         spl = []
         if "~" in ctx.verb.payload:
             spl = ctx.verb.payload.split("~")

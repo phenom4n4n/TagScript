@@ -1,10 +1,10 @@
 from typing import Optional
 
-from ..interface import Block
+from ..interface import verb_required_block
 from ..interpreter import Context
 
 
-class RequireBlock(Block):
+class RequireBlock(verb_required_block(True, parameter=True)):
     """
     The require block will attempt to convert the given parameter into a channel
     or role, using name or ID. If the user running the tag is not in the targeted
@@ -27,13 +27,9 @@ class RequireBlock(Block):
         {require(757425366209134764, 668713062186090506, 737961895356792882):You aren't allowed to use this tag.}
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "require", dec == "whitelist"])
+    ACCEPTED_NAMES = ("require", "whitelist")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if not ctx.verb.parameter:
-            return None
         actions = ctx.response.actions.get("requires")
         if actions:
             return None
@@ -44,7 +40,7 @@ class RequireBlock(Block):
         return ""
 
 
-class BlacklistBlock(Block):
+class BlacklistBlock(verb_required_block(True, parameter=True)):
     """
     The blacklist block will attempt to convert the given parameter into a channel
     or role, using name or ID. If the user running the tag is in the targeted
@@ -65,13 +61,9 @@ class BlacklistBlock(Block):
         {blacklist(Tag Blacklist, 668713062186090506):You are blacklisted from using tags.}
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec == "blacklist"
+    ACCEPTED_NAMES = ("blacklist",)
 
     def process(self, ctx: Context) -> Optional[str]:
-        if not ctx.verb.parameter:
-            return None
         actions = ctx.response.actions.get("blacklist")
         if actions:
             return None

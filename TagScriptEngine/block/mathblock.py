@@ -147,9 +147,7 @@ NSP = NumericStringParser()
 
 
 class MathBlock(Block):
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "math", dec == "m", dec == "+", dec == "calc"])
+    ACCEPTED_NAMES = ("math", "m", "+", "calc")
 
     def process(self, ctx: Context):
         try:

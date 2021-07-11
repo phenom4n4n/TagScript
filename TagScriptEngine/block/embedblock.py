@@ -98,6 +98,8 @@ class EmbedBlock(Block):
         {embed(title):my embed title}
     """
 
+    ACCEPTED_NAMES = ("embed",)
+
     ATTRIBUTE_HANDLERS = {
         "description": setattr,
         "title": setattr,
@@ -107,10 +109,6 @@ class EmbedBlock(Block):
         "thumbnail": set_dynamic_url,
         "image": set_dynamic_url,
     }
-
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec == "embed"
 
     @staticmethod
     def get_embed(ctx: Context) -> Embed:

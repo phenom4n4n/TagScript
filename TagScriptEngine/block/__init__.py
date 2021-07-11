@@ -10,7 +10,7 @@ from .cooldown import CooldownBlock
 from .embedblock import EmbedBlock
 from .fiftyfifty import FiftyFiftyBlock
 from .loosevariablegetter import LooseVariableGetterBlock
-from .math import MathBlock
+from .mathblock import MathBlock
 from .randomblock import RandomBlock
 from .range import RangeBlock
 from .redirect import RedirectBlock

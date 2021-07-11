@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Optional
 
 __all__ = ("Block", "verb_required_block")
@@ -73,6 +74,7 @@ class Block:
         return None
 
 
+@lru_cache(maxsize=None)
 def verb_required_block(
     implicit: bool, *, payload: bool = False, parameter: bool = False
 ) -> Block:
@@ -90,7 +92,11 @@ def verb_required_block(
     """
     check = (lambda x: x) if implicit else (lambda x: x is not None)
 
-    class VerbRequiredBlock(Block):
+    class RequireMeta(type):
+        def __repr__(self):
+            return f"VerbRequiredBlock(implicit={implicit!r}, payload={payload!r}, parameter={parameter!r})"
+
+    class VerbRequiredBlock(Block, metaclass=RequireMeta):
         def will_accept(self, ctx: "interpreter.Context") -> bool:
             verb = ctx.verb
             if payload and not check(verb.payload):
