@@ -98,6 +98,8 @@ class MemberAdapter(AttributeAdapter):
         Whether or not the author is a bot.
     color
         The author's top role's color as a hex code.
+    top_role
+        The author's top role.
     """
 
     def update_attributes(self):
@@ -110,6 +112,7 @@ class MemberAdapter(AttributeAdapter):
             "joined_at": getattr(self.object, "joined_at", self.object.created_at),
             "mention": self.object.mention,
             "bot": self.object.bot,
+            "top_role": self.object.top_role,
         }
         self._attributes.update(additional_attributes)
 
