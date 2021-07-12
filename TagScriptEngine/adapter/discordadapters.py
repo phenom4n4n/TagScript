@@ -112,7 +112,7 @@ class MemberAdapter(AttributeAdapter):
             "joined_at": getattr(self.object, "joined_at", self.object.created_at),
             "mention": self.object.mention,
             "bot": self.object.bot,
-            "top_role": self.object.top_role,
+            "top_role": getattr(self.object, "top_role", None),
         }
         self._attributes.update(additional_attributes)
 
