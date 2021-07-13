@@ -149,11 +149,18 @@ class Interpreter:
         return f"<{type(self).__name__} blocks={self.blocks!r}>"
 
     def _get_context(
-        self, node: Node, final: str, *, response: Response, original_message: str, verb_limit: int
+        self,
+        node: Node,
+        final: str,
+        *,
+        response: Response,
+        original_message: str,
+        verb_limit: int,
+        dot_parameter: bool,
     ) -> Context:
         # Get the updated verb string from coordinates and make the context
         start, end = node.coordinates
-        node.verb = Verb(final[start : end + 1], limit=verb_limit)
+        node.verb = Verb(final[start : end + 1], limit=verb_limit, dot_parameter=dot_parameter)
         return Context(node.verb, response, self, original_message)
 
     def _get_acceptors(self, ctx: Context) -> List[Block]:
@@ -214,6 +221,7 @@ class Interpreter:
         *,
         charlimit: int,
         verb_limit: int = 2000,
+        dot_parameter: bool,
     ):
         final = message
         total_work = 0
@@ -221,7 +229,12 @@ class Interpreter:
         for index, node in enumerate(node_ordered_list):
             start, end = node.coordinates
             ctx = self._get_context(
-                node, final, response=response, original_message=message, verb_limit=verb_limit
+                node,
+                final,
+                response=response,
+                original_message=message,
+                verb_limit=verb_limit,
+                dot_parameter=dot_parameter,
             )
             try:
                 output = self._process_blocks(ctx, node)
@@ -250,6 +263,7 @@ class Interpreter:
         seed_variables: AdapterDict = None,
         *,
         charlimit: Optional[int] = None,
+        dot_parameter: bool = False,
         **kwargs,
     ) -> Response:
         """
@@ -263,6 +277,8 @@ class Interpreter:
             A dictionary containing strings to adapters to provide context variables for processing.
         charlimit: int
             The maximum characters to process.
+        dot_parameter: bool
+            Whether the parameter should be followed after a "." or use the default of parantheses.
         kwargs: Dict[str, Any]
             Additional keyword arguments that may be used by blocks during processing.
 
@@ -283,7 +299,13 @@ class Interpreter:
         response = Response(variables=seed_variables, extra_kwargs=kwargs)
         node_ordered_list = build_node_tree(message)
         try:
-            output = self._solve(message, node_ordered_list, response, charlimit=charlimit)
+            output = self._solve(
+                message,
+                node_ordered_list,
+                response,
+                charlimit=charlimit,
+                dot_parameter=dot_parameter,
+            )
         except TagScriptError:
             raise
         except Exception as error:
@@ -322,6 +344,7 @@ class AsyncInterpreter(Interpreter):
         *,
         charlimit: int,
         verb_limit: int = 2000,
+        dot_parameter: bool,
     ):
         final = message
         total_work = 0
@@ -329,7 +352,12 @@ class AsyncInterpreter(Interpreter):
         for index, node in enumerate(node_ordered_list):
             start, end = node.coordinates
             ctx = self._get_context(
-                node, final, response=response, original_message=message, verb_limit=verb_limit
+                node,
+                final,
+                response=response,
+                original_message=message,
+                verb_limit=verb_limit,
+                dot_parameter=dot_parameter,
             )
             try:
                 output = await self._process_blocks(ctx, node)
@@ -349,6 +377,7 @@ class AsyncInterpreter(Interpreter):
         seed_variables: AdapterDict = None,
         *,
         charlimit: Optional[int] = None,
+        dot_parameter: bool = False,
         **kwargs,
     ) -> Response:
         """
@@ -362,6 +391,8 @@ class AsyncInterpreter(Interpreter):
             A dictionary containing strings to adapters to provide context variables for processing.
         charlimit: int
             The maximum characters to process.
+        dot_parameter: bool
+            Whether the parameter should be followed after a "." or use the default of parantheses.
         kwargs: Dict[str, Any]
             Additional keyword arguments that may be used by blocks during processing.
 
@@ -382,7 +413,13 @@ class AsyncInterpreter(Interpreter):
         response = Response(variables=seed_variables, extra_kwargs=kwargs)
         node_ordered_list = build_node_tree(message)
         try:
-            output = await self._solve(message, node_ordered_list, response, charlimit=charlimit)
+            output = await self._solve(
+                message,
+                node_ordered_list,
+                response,
+                charlimit=charlimit,
+                dot_parameter=dot_parameter,
+            )
         except TagScriptError:
             raise
         except Exception as error:
