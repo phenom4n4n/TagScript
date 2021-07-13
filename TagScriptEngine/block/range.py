@@ -32,7 +32,7 @@ class RangeBlock(verb_required_block(True, payload=True)):
         # I am guessing your height is 5.3ft.
     """
 
-    ACCEPTED_NAME = ("rangef", "range")
+    ACCEPTED_NAMES = ("rangef", "range")
 
     def process(self, ctx: Context) -> Optional[str]:
         try:

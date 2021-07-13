@@ -85,7 +85,7 @@ class Response:
         A dictionary that blocks can access and modify to define post-processing actions.
     variables: Dict[str, Adapter]
         A dictionary of variables that blocks such as the `LooseVariableGetterBlock` can access.
-    extra_kwargs : Dict[str, Any]
+    extra_kwargs: Dict[str, Any]
         A dictionary of extra keyword arguments that blocks can use to define their own behavior.
     """
 
@@ -127,7 +127,7 @@ class Context:
         self.response: Response = res
 
     def __repr__(self):
-        return "<Context verb={0.verb!r}>".format(self)
+        return f"<Context verb={self.verb!r}>"
 
 
 class Interpreter:
