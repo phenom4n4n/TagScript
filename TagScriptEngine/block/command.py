@@ -28,12 +28,16 @@ class CommandBlock(verb_required_block(True, payload=True)):
 
     ACCEPTED_NAMES = ("c", "com", "command")
 
+    def __init__(self, limit: int = 3):
+        self.limit = limit
+        super().__init__()
+
     def process(self, ctx: Context) -> Optional[str]:
         command = ctx.verb.payload.strip()
         actions = ctx.response.actions.get("commands")
         if actions:
-            if len(actions) >= 3:
-                return f"`COMMAND LIMIT REACHED (3)`"
+            if len(actions) >= self.limit:
+                return f"`COMMAND LIMIT REACHED ({self.limit})`"
         else:
             ctx.response.actions["commands"] = []
         ctx.response.actions["commands"].append(command)
