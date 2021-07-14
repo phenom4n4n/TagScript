@@ -13,7 +13,6 @@ __all__ = (
     "GuildAdapter",
 )
 
-
 class AttributeAdapter(Adapter):
     __slots__ = ("object", "_attributes", "_methods")
 
@@ -107,7 +106,7 @@ class MemberAdapter(AttributeAdapter):
             "color": self.object.color,
             "colour": self.object.color,
             "nick": self.object.display_name,
-            "avatar": (self.object.avatar_url, False),
+            "avatar": ((getattr(self.object, 'avatar_url', None) or (getattr(self.object, 'avatar') )), False),
             "discriminator": self.object.discriminator,
             "joined_at": getattr(self.object, "joined_at", self.object.created_at),
             "mention": self.object.mention,
@@ -205,7 +204,7 @@ class GuildAdapter(AttributeAdapter):
             else:
                 humans += 1
         additional_attributes = {
-            "icon": (guild.icon_url, False),
+            "icon": ((getattr(guild, 'icon_url', None) or (getattr(guild, 'icon') ), False)),
             "member_count": guild.member_count,
             "bots": bots,
             "humans": humans,
