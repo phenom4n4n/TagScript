@@ -34,7 +34,8 @@ class VersionInfo(namedtuple("VersionInfo", "major minor micro")):
 
         Returns
         -------
-            str: String representation of the version information.
+        str
+            String representation of the version information.
         """
         return "{major}.{minor}.{micro}".format(**self._asdict())
 
