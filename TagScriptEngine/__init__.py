@@ -8,7 +8,7 @@ from .interpreter import *
 from .utils import *
 from .verb import Verb
 
-__version__ = "2.6.0"
+__version__ = "2.6.1"
 
 
 # github co-pilot automatically wrote the documentation for this and I decided to keep it
