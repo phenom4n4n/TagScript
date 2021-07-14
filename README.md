@@ -2,6 +2,9 @@
 <a href='https://phen-cogs.readthedocs.io/en/latest/?badge=latest'>
     <img src='https://readthedocs.org/projects/phen-cogs/badge/?version=latest' alt='Documentation Status' />
 </a>
+<a href='https://pypi.python.org/pypi/TagScript/'>
+    <img src='https://img.shields.io/pypi/v/TagScript' alt=' yPI' />
+</a>
 
 This repository is a fork of JonSnowbd's [TagScript](https://github.com/JonSnowbd/TagScript).
 This fork adds support for Discord object adapters and a couple Discord related blocks, as
