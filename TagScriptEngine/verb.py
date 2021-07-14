@@ -44,6 +44,7 @@ class Verb:
         "dec_start",
         "skip_next",
         "parsed_length",
+        "dot_parameter",
     )
 
     def __init__(
@@ -52,9 +53,10 @@ class Verb:
         self.declaration: Optional[str] = None
         self.parameter: Optional[str] = None
         self.payload: Optional[str] = None
+        self.dot_parameter = dot_parameter
         if verb_string is None:
             return
-        self.__parse(verb_string, limit, dot_parameter)
+        self.__parse(verb_string, limit)
 
     def __str__(self):
         """This makes Verb compatible with str(x)"""
@@ -62,7 +64,7 @@ class Verb:
         if self.declaration is not None:
             response += self.declaration
         if self.parameter is not None:
-            response += "(" + self.parameter + ")"
+            response += f".{self.parameter}" if self.dot_parameter else f"({self.parameter})"
         if self.payload is not None:
             response += ":" + self.payload
         return response + "}"
@@ -72,7 +74,7 @@ class Verb:
         inner = " ".join(f"{attr}={getattr(self, attr)!r}" for attr in attrs)
         return f"<Verb {inner}>"
 
-    def __parse(self, verb_string: str, limit: int, dot_parameter: bool = False):
+    def __parse(self, verb_string: str, limit: int):
         self.parsed_string = verb_string[1:-1][:limit]
         self.parsed_length = len(self.parsed_string)
         self.dec_depth = 0
@@ -80,7 +82,7 @@ class Verb:
         self.skip_next = False
 
         parse_parameter = (
-            self._parse_paranthesis_dot if dot_parameter else self._parse_paranthesis_parameter
+            self._parse_dot_parameter if self.dot_parameter else self._parse_paranthesis_parameter
         )
 
         for i, v in enumerate(self.parsed_string):
@@ -107,11 +109,11 @@ class Verb:
             return self.close_parameter(i)
         return False
 
-    def _parse_paranthesis_dot(self, i: int, v: str) -> bool:
+    def _parse_dot_parameter(self, i: int, v: str) -> bool:
         if v == ".":
             self.open_parameter(i)
-        elif (v == ":" or i == self.parsed_length) and self.dec_depth:
-            return self.close_parameter(i)
+        elif (v == ":" or i == self.parsed_length - 1) and self.dec_depth:
+            return self.close_parameter(i + 1)
         return False
 
     def set_payload(self):
