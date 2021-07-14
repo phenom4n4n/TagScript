@@ -29,8 +29,6 @@ class Block:
         """
         Describes whether the block is valid for the given :class:`~TagScriptEngine.interpreter.Context`.
 
-        Subclasses must implement this.
-
         Parameters
         ----------
         ctx: Context
@@ -76,7 +74,10 @@ class Block:
 
 @lru_cache(maxsize=None)
 def verb_required_block(
-    implicit: bool, *, payload: bool = False, parameter: bool = False
+    implicit: bool,
+    *,
+    parameter: bool = False,
+    payload: bool = False,
 ) -> Block:
     """
     Get a Block subclass that requires a verb to implicitly or explicitly have a parameter or payload passed.
@@ -84,11 +85,12 @@ def verb_required_block(
     Parameters
     ----------
     implicit: bool
-        ...
-    payload: bool
-        ...
+        Specifies whether the value is required to be passed implicitly or explicitly.
+        ``{block()}`` would be allowed if implicit is False.
     parameter: bool
-        ...
+        Passing True will cause the block to require a parameter to be passed.
+    payload: bool
+        Passing True will cause the block to require the payload to be passed.
     """
     check = (lambda x: x) if implicit else (lambda x: x is not None)
 

@@ -9,6 +9,13 @@ Interpreter
 .. autoclass:: TagScriptEngine.interpreter.Interpreter
     :members:
 
+^^^^^^^^^^^^^^^^
+AsyncInterpreter
+^^^^^^^^^^^^^^^^
+
+.. autoclass:: TagScriptEngine.interpreter.AsyncInterpreter
+    :members:
+
 -------
 Context
 -------

@@ -4,17 +4,6 @@ __all__ = ("Verb",)
 
 
 class Verb:
-    __slots__ = (
-        "declaration",
-        "parameter",
-        "payload",
-        "parsed_string",
-        "dec_depth",
-        "dec_start",
-        "skip_next",
-        "parsed_length",
-    )
-
     """
     Represents the passed TagScript block.
 
@@ -45,6 +34,17 @@ class Verb:
         # dot_parameter = True
         {declaration.parameter:payload}
     """
+
+    __slots__ = (
+        "declaration",
+        "parameter",
+        "payload",
+        "parsed_string",
+        "dec_depth",
+        "dec_start",
+        "skip_next",
+        "parsed_length",
+    )
 
     def __init__(
         self, verb_string: Optional[str] = None, *, limit: int = 2000, dot_parameter: bool = False
