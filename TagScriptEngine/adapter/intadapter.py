@@ -3,6 +3,8 @@ from ..verb import Verb
 
 
 class IntAdapter(Adapter):
+    __slots__ = ("integer",)
+
     def __init__(self, integer: int):
         self.integer: int = int(integer)
 

@@ -3,6 +3,8 @@ from ..verb import Verb
 
 
 class FunctionAdapter(Adapter):
+    __slots__ = ("fn",)
+
     def __init__(self, function_pointer):
         self.fn = function_pointer
 

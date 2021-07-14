@@ -1,10 +1,10 @@
 from urllib.parse import quote, quote_plus
 
-from ..interface import Block
+from ..interface import verb_required_block
 from ..interpreter import Context
 
 
-class URLEncodeBlock(Block):
+class URLEncodeBlock(verb_required_block(True, payload=True)):
     """
     This block will encode a given string into a properly formatted url
     with non-url compliant characters replaced. Using ``+`` as the parameter
@@ -30,12 +30,8 @@ class URLEncodeBlock(Block):
         # <https://phen-cogs.readthedocs.io/en/latest/search.html?q=command+block&check_keywords=yes&area=default>
     """
 
-    def will_accept(self, ctx: Context):
-        dec = ctx.verb.declaration.lower()
-        return dec == "urlencode"
+    ACCEPTED_NAMES = ("urlencode",)
 
     def process(self, ctx: Context):
-        if not ctx.verb.payload:
-            return
         method = quote_plus if ctx.verb.parameter == "+" else quote
         return method(ctx.verb.payload)

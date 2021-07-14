@@ -1,41 +1,6 @@
 import unittest
 
-from TagScriptEngine import Interpreter, Verb, WorkloadExceededError, adapter, block, interface
-
-
-# Required third party blocks.
-class ReplaceBlock(interface.Block):
-    def will_accept(self, ctx: Interpreter.Context):
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "replace"])
-
-    def process(self, ctx: Interpreter.Context):
-        if ctx.verb.parameter is None:
-            return "TS Error: No join character supplied"
-        try:
-            before, after = ctx.verb.parameter.split(",", maxsplit=1)
-        except:
-            return "TS Error: Supply a before and after string"
-
-        return ctx.verb.payload.replace(before, after)
-
-
-class PythonBlock(interface.Block):
-    def will_accept(self, ctx: Interpreter.Context):
-        dec = ctx.verb.declaration.lower()
-        return dec in ("contains", "in", "index")
-
-    def process(self, ctx: Interpreter.Context):
-        dec = ctx.verb.declaration.lower()
-        if dec == "contains":
-            return str(bool(ctx.verb.parameter in ctx.verb.payload.split())).lower()
-        elif dec == "in":
-            return str(bool(ctx.verb.parameter in ctx.verb.payload)).lower()
-        else:
-            try:
-                return str(ctx.verb.payload.strip().split().index(ctx.verb.parameter))
-            except ValueError:
-                return "-1"
+from TagScriptEngine import Interpreter, WorkloadExceededError, adapter, block, interface
 
 
 class TestEdgeCases(unittest.TestCase):
@@ -55,8 +20,8 @@ class TestEdgeCases(unittest.TestCase):
             block.ShortCutRedirectBlock("message"),
             block.LooseVariableGetterBlock(),
             block.SubstringBlock(),
-            PythonBlock(),
-            ReplaceBlock(),
+            block.PythonBlock(),
+            block.ReplaceBlock(),
         ]
         self.engine = Interpreter(self.blocks)
 
@@ -191,4 +156,4 @@ class TestEdgeCases(unittest.TestCase):
         {recursion}
 """
 
-            self.engine.process(script, data, 2000)
+            self.engine.process(script, data, charlimit=2000)

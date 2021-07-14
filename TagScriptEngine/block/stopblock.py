@@ -1,13 +1,14 @@
 from typing import Optional
 
-from ..interface import Block
+from ..exceptions import StopError
+from ..interface import verb_required_block
 from ..interpreter import Context
 from . import helper_parse_if
 
 
-class StopBlock(Block):
+class StopBlock(verb_required_block(True, parameter=True)):
     """
-    The stop block stops tag processing if the given parameter is true. 
+    The stop block stops tag processing if the given parameter is true.
     If a message is passed to the payload it will return that message.
 
     **Usage:** ``{stop(<bool>):[string]}``
@@ -24,14 +25,9 @@ class StopBlock(Block):
         # enforces providing arguments for a tag
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec in ("stop", "halt", "error")
+    ACCEPTED_NAMES = ("stop", "halt", "error")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if ctx.verb.parameter is None:
-            return None
         if helper_parse_if(ctx.verb.parameter):
-            ctx.response.actions["TSE_STOP"] = True
-            return "" if ctx.verb.payload is None else ctx.verb.payload
+            raise StopError("" if ctx.verb.payload is None else ctx.verb.payload)
         return ""

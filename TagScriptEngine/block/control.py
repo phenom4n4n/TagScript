@@ -1,13 +1,13 @@
 from typing import Optional
 
-from ..interface import Block
+from ..interface import verb_required_block
 from ..interpreter import Context
 from . import helper_parse_if, helper_parse_list_if, helper_split
 
 
-def parse_into_output(payload, result):
+def parse_into_output(payload: str, result: Optional[bool]) -> Optional[str]:
     if result is None:
-        return None
+        return
     try:
         output = helper_split(payload, False)
         if output != None and len(output) == 2:
@@ -15,16 +15,18 @@ def parse_into_output(payload, result):
                 return output[0]
             else:
                 return output[1]
+        elif result:
+            return payload
         else:
-            if result:
-                return payload
-            else:
-                return ""
+            return ""
     except:
-        return None
+        return
 
 
-class AnyBlock(Block):
+ImplicitPPRBlock = verb_required_block(True, payload=True, parameter=True)
+
+
+class AnyBlock(ImplicitPPRBlock):
     """
     The any block checks that any of the passed expressions are true.
     Multiple expressions can be passed to the parameter by splitting them with ``|``.
@@ -49,18 +51,15 @@ class AnyBlock(Block):
         # if {args} is what's up!
         How rude.
     """
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "any", dec == "or"])
+
+    ACCEPTED_NAMES = ("any", "or")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if ctx.verb.payload is None or ctx.verb.parameter is None:
-            return None
         result = any(helper_parse_list_if(ctx.verb.parameter) or [])
         return parse_into_output(ctx.verb.payload, result)
 
 
-class AllBlock(Block):
+class AllBlock(ImplicitPPRBlock):
     """
     The all block checks that all of the passed expressions are true.
     Multiple expressions can be passed to the parameter by splitting them with ``|``.
@@ -85,18 +84,15 @@ class AllBlock(Block):
         # if {args} is 282
         You picked 282.
     """
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec in ("all", "and")
+
+    ACCEPTED_NAMES = ("all", "and")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if ctx.verb.payload is None or ctx.verb.parameter is None:
-            return None
         result = all(helper_parse_list_if(ctx.verb.parameter) or [])
         return parse_into_output(ctx.verb.payload, result)
 
 
-class IfBlock(Block):
+class IfBlock(ImplicitPPRBlock):
     """
     The if block returns a message based on the passed expression to the parameter.
     An expression is represented by two values compared with an operator.
@@ -140,12 +136,9 @@ class IfBlock(Block):
         # if args is 14
         # Too high, try again.
     """
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec == "if"
+
+    ACCEPTED_NAMES = ("if",)
 
     def process(self, ctx: Context) -> Optional[str]:
-        if ctx.verb.payload is None or ctx.verb.parameter is None:
-            return None
         result = helper_parse_if(ctx.verb.parameter)
         return parse_into_output(ctx.verb.payload, result)

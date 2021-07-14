@@ -1,34 +1,10 @@
-"""
-MIT License
-
-Copyright (c) 2020-2021 phenom4n4n
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
 from typing import Optional
 
-from ..interface import Block
+from ..interface import Block, verb_required_block
 from ..interpreter import Context
 
 
-class CommandBlock(Block):
+class CommandBlock(verb_required_block(True, payload=True)):
     """
     Run a command as if the tag invoker had ran it. Only 3 command
     blocks can be used in a tag.
@@ -50,13 +26,9 @@ class CommandBlock(Block):
         # invokes ban command on the pinged user with the reason as "Chatflood/spam"
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return any([dec == "c", dec == "com", dec == "command"])
+    ACCEPTED_NAMES = ("c", "com", "command")
 
     def process(self, ctx: Context) -> Optional[str]:
-        if not ctx.verb.payload:
-            return None
         command = ctx.verb.payload.strip()
         actions = ctx.response.actions.get("commands")
         if actions:
@@ -99,9 +71,7 @@ class OverrideBlock(Block):
         # overrides commands that require the mod role or have user permission requirements
     """
 
-    def will_accept(self, ctx: Context) -> bool:
-        dec = ctx.verb.declaration.lower()
-        return dec == "override"
+    ACCEPTED_NAMES = ("override",)
 
     def process(self, ctx: Context) -> Optional[str]:
         param = ctx.verb.parameter

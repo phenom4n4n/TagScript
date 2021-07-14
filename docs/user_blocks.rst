@@ -38,6 +38,12 @@ Command Block
 
 .. autoclass:: TagScriptEngine.block.CommandBlock
 
+--------------
+Cooldown Block
+--------------
+
+.. autoclass:: TagScriptEngine.block.CooldownBlock
+
 -----------
 Embed Block
 -----------

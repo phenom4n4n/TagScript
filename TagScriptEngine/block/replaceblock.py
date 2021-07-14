@@ -1,8 +1,8 @@
-from ..interface import Block
+from ..interface import verb_required_block
 from ..interpreter import Context
 
 
-class ReplaceBlock(Block):
+class ReplaceBlock(verb_required_block(True, payload=True, parameter=True)):
     """
     The replace block will replace specific characters in a string.
     The parameter should split by a ``,``, containing the characters to find
@@ -28,13 +28,10 @@ class ReplaceBlock(Block):
         {replace(, ):Test}
         # T e s t
     """
-    def will_accept(self, ctx: Context):
-        dec = ctx.verb.declaration.lower()
-        return dec == "replace"
+
+    ACCEPTED_NAMES = ("replace",)
 
     def process(self, ctx: Context):
-        if not (ctx.verb.parameter and ctx.verb.payload):
-            return
         try:
             before, after = ctx.verb.parameter.split(",", 1)
         except ValueError:
@@ -43,7 +40,7 @@ class ReplaceBlock(Block):
         return ctx.verb.payload.replace(before, after)
 
 
-class PythonBlock(Block):
+class PythonBlock(verb_required_block(True, payload=True, parameter=True)):
     """
     The in block serves three different purposes depending on the alias that is used.
 
@@ -53,8 +50,8 @@ class PythonBlock(Block):
 
     ``index`` finds the location of the parameter in the payload, split by whitespace.
     If the parameter string is not found in the payload, it returns 1.
-    
-    index is used to return the value of the string form the given list of 
+
+    index is used to return the value of the string form the given list of
 
     **Usage:** ``{in(<string>):<payload>}``
 
@@ -83,6 +80,7 @@ class PythonBlock(Block):
         {index(pie):I love to eat food. everyone does.}
         # -1
     """
+
     def will_accept(self, ctx: Context):
         dec = ctx.verb.declaration.lower()
         return dec in ("contains", "in", "index")

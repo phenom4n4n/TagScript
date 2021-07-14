@@ -1,5 +1,5 @@
-black
-isort
 autoflake
+black
 discord.py
+isort
 pyparsing

@@ -1,6 +1,6 @@
 from random import choice
 
-from discord import Guild, Member, TextChannel
+from discord import TextChannel
 
 from ..interface import Adapter
 from ..utils import escape_content
@@ -15,6 +15,8 @@ __all__ = (
 
 
 class AttributeAdapter(Adapter):
+    __slots__ = ("object", "_attributes", "_methods")
+
     def __init__(self, base):
         self.object = base
         self._attributes = {
@@ -96,6 +98,8 @@ class MemberAdapter(AttributeAdapter):
         Whether or not the author is a bot.
     color
         The author's top role's color as a hex code.
+    top_role
+        The author's top role.
     """
 
     def update_attributes(self):
@@ -108,6 +112,7 @@ class MemberAdapter(AttributeAdapter):
             "joined_at": getattr(self.object, "joined_at", self.object.created_at),
             "mention": self.object.mention,
             "bot": self.object.bot,
+            "top_role": getattr(self.object, "top_role", None),
         }
         self._attributes.update(additional_attributes)
 
