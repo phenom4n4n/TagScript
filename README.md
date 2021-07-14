@@ -18,7 +18,7 @@ Additional documentation on the TagScriptEngine library can be [found here](http
 Download the latest version through pip:
 
 ```
-pip(3) install git+https://github.com/phenom4n4n/TagScript.git
+pip(3) install TagScript
 ```
 
 Download from a commit:
