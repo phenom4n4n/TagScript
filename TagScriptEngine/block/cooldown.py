@@ -18,7 +18,7 @@ class CooldownBlock(verb_required_block(True, payload=True, parameter=True)):
     The ``rate`` is the number of times the tag can be used every ``per`` seconds.
 
     The payload requires a ``key`` value, which is the key used to store the cooldown.
-    A key should be any string that is unique. If a channel's ID is passed as a key, the
+    A key should be any string that is unique. If a channel's ID is passed as a key,
     the tag's cooldown will be enforced on that channel. Running the tag in a separate channel
     would have a different cooldown with the same ``rate`` and ``per`` values.
 
