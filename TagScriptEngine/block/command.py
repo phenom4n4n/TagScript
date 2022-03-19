@@ -22,7 +22,7 @@ class CommandBlock(verb_required_block(True, payload=True)):
         {c:ping}
         # invokes ping command
 
-        {c:kick {target(id)} Chatflood/spam}
+        {c:ban {target(id)} Chatflood/spam}
         # invokes ban command on the pinged user with the reason as "Chatflood/spam"
     """
 
