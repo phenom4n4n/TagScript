@@ -224,4 +224,4 @@ class GuildAdapter(AttributeAdapter):
         self._methods.update(additional_methods)
 
     def random_member(self):
-        return choice(self.object.members)
+        return MemberAdapter(choice(self.object.members))
