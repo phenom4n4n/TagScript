@@ -71,13 +71,13 @@ class Block:
         """
         raise NotImplementedError
 
-    def post_process(self, ctx: "interpreter.Context"):
+    def post_process(self, ctx: Context):
         return None
 
 
 @lru_cache(maxsize=None)
 def verb_required_block(
-    implicit: bool,
+    explicit: bool,
     *,
     parameter: bool = False,
     payload: bool = False,
@@ -87,19 +87,19 @@ def verb_required_block(
 
     Parameters
     ----------
-    implicit: bool
+    explicit: bool
         Specifies whether the value is required to be passed implicitly or explicitly.
-        ``{block()}`` would be allowed if implicit is False.
+        ``{block()}`` would be allowed if explicit is False.
     parameter: bool
         Passing True will cause the block to require a parameter to be passed.
     payload: bool
         Passing True will cause the block to require the payload to be passed.
     """
-    check = (lambda x: x) if implicit else (lambda x: x is not None)
+    check = (lambda x: x) if explicit else (lambda x: x is not None)
 
     class RequireMeta(type):
         def __repr__(self):
-            return f"VerbRequiredBlock(implicit={implicit!r}, payload={payload!r}, parameter={parameter!r})"
+            return f"VerbRequiredBlock(explicit={explicit!r}, payload={payload!r}, parameter={parameter!r})"
 
     class VerbRequiredBlock(Block, metaclass=RequireMeta):
         def will_accept(self, ctx: Context) -> bool:

@@ -1,5 +1,5 @@
 from ..interface import Adapter
-from ..verb import Verb
+from ..interpreter import Context
 
 
 class IntAdapter(Adapter):
@@ -11,5 +11,5 @@ class IntAdapter(Adapter):
     def __repr__(self):
         return f"<{type(self).__qualname__} integer={repr(self.integer)}>"
 
-    def get_value(self, ctx: Verb) -> str:
+    def get_value(self, ctx: Context) -> str:
         return str(self.integer)

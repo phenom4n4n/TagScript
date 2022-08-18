@@ -138,7 +138,7 @@ class EmbedBlock(Block):
 
     @staticmethod
     def get_embed(ctx: Context) -> Embed:
-        return ctx.response.actions.get("embed", Embed())
+        return Embed.from_dict(ctx.response.variables.get("__emb", Embed().to_dict()))
 
     @staticmethod
     def value_to_color(value: Optional[Union[int, str]]) -> Colour:
@@ -194,7 +194,7 @@ class EmbedBlock(Block):
             return str(error)
         if length > 6000:
             return f"`MAX EMBED LENGTH REACHED ({length}/6000)`"
-        ctx.response.actions["embed"] = embed
+        ctx.response.variables["__emb"] = embed
         return ""
 
     def process(self, ctx: Context) -> Optional[str]:

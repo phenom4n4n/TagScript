@@ -3,6 +3,8 @@ from appJar import gui
 from TagScriptEngine import Interpreter, block
 
 blocks = [
+    block.SendBlock(),
+    block.EmbedBlock(),
     block.MathBlock(),
     block.RandomBlock(),
     block.RangeBlock(),

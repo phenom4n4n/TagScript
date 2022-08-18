@@ -1,6 +1,6 @@
 from ..interface import Adapter
 from ..utils import escape_content
-from ..verb import Verb
+from ..interpreter import Context
 
 
 class StringAdapter(Adapter):
@@ -13,23 +13,23 @@ class StringAdapter(Adapter):
     def __repr__(self):
         return f"<{type(self).__qualname__} string={repr(self.string)}>"
 
-    def get_value(self, ctx: Verb) -> str:
+    def get_value(self, ctx: Context) -> str:
         return self.return_value(self.handle_ctx(ctx))
 
-    def handle_ctx(self, ctx: Verb) -> str:
-        if ctx.parameter is None:
+    def handle_ctx(self, ctx: Context) -> str:
+        if ctx.verb.parameter is None:
             return self.string
         try:
-            if "+" not in ctx.parameter:
-                index = int(ctx.parameter) - 1
-                splitter = " " if ctx.payload is None else ctx.payload
+            if "+" not in ctx.verb.parameter:
+                index = int(ctx.verb.parameter) - 1
+                splitter = " " if ctx.verb.payload is None else ctx.verb.payload
                 return self.string.split(splitter)[index]
             else:
-                index = int(ctx.parameter.replace("+", "")) - 1
-                splitter = " " if ctx.payload is None else ctx.payload
-                if ctx.parameter.startswith("+"):
+                index = int(ctx.verb.parameter.replace("+", "")) - 1
+                splitter = " " if ctx.verb.payload is None else ctx.verb.payload
+                if ctx.verb.parameter.startswith("+"):
                     return splitter.join(self.string.split(splitter)[: index + 1])
-                elif ctx.parameter.endswith("+"):
+                elif ctx.verb.parameter.endswith("+"):
                     return splitter.join(self.string.split(splitter)[index:])
                 else:
                     return self.string.split(splitter)[index]

@@ -30,6 +30,6 @@ class LooseVariableGetterBlock(Block):
 
     def process(self, ctx: Context) -> Optional[str]:
         if ctx.verb.declaration in ctx.response.variables:
-            return ctx.response.variables[ctx.verb.declaration].get_value(ctx.verb)
+            return ctx.response.variables[ctx.verb.declaration].get_value(ctx)
         else:
             return None

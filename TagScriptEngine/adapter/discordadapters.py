@@ -3,8 +3,8 @@ from random import choice
 from discord import TextChannel
 
 from ..interface import Adapter
+from ..interpreter import Context
 from ..utils import escape_content
-from ..verb import Verb
 
 __all__ = (
     "AttributeAdapter",
@@ -38,16 +38,16 @@ class AttributeAdapter(Adapter):
     def update_methods(self):
         pass
 
-    def get_value(self, ctx: Verb) -> str:
+    def get_value(self, ctx: Context) -> str:
         should_escape = False
 
-        if ctx.parameter is None:
+        if ctx.verb.parameter is None:
             return_value = str(self.object)
         else:
             try:
-                value = self._attributes[ctx.parameter]
+                value = self._attributes[ctx.verb.parameter]
             except KeyError:
-                if method := self._methods.get(ctx.parameter):
+                if method := self._methods.get(ctx.verb.parameter):
                     value = method()
                 else:
                     return
@@ -218,10 +218,13 @@ class GuildAdapter(AttributeAdapter):
             "description": guild.description or "No description.",
         }
         self._attributes.update(additional_attributes)
-
-    def update_methods(self):
-        additional_methods = {"random": self.random_member}
-        self._methods.update(additional_methods)
-
+        
     def random_member(self):
         return MemberAdapter(choice(self.object.members))
+    
+    def get_value(self, ctx: Context) -> str:
+        if ctx.verb.parameter == "random":
+            ctx.response.variables["random"] = self.random_member()
+            return "{random}"
+        
+        return super().get_value(ctx)

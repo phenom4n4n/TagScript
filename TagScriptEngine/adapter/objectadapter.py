@@ -1,7 +1,7 @@
 from inspect import ismethod
 
 from ..interface import Adapter
-from ..verb import Verb
+from ..interpreter import Context
 
 
 class SafeObjectAdapter(Adapter):
@@ -13,13 +13,13 @@ class SafeObjectAdapter(Adapter):
     def __repr__(self):
         return f"<{type(self).__qualname__} object={repr(self.object)}>"
 
-    def get_value(self, ctx: Verb) -> str:
-        if ctx.parameter is None:
+    def get_value(self, ctx: Context) -> str:
+        if ctx.verb.parameter is None:
             return str(self.object)
-        if ctx.parameter.startswith("_") or "." in ctx.parameter:
+        if ctx.verb.parameter.startswith("_") or "." in ctx.verb.parameter:
             return
         try:
-            attribute = getattr(self.object, ctx.parameter)
+            attribute = getattr(self.object, ctx.verb.parameter)
         except AttributeError:
             return
         if ismethod(attribute):

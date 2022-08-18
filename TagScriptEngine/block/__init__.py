@@ -16,6 +16,7 @@ from .range import RangeBlock
 from .redirect import RedirectBlock
 from .replaceblock import PythonBlock, ReplaceBlock
 from .require_blacklist import BlacklistBlock, RequireBlock
+from .send import SendBlock
 from .shortcutredirect import ShortCutRedirectBlock
 from .stopblock import StopBlock
 from .strf import StrfBlock
@@ -47,6 +48,7 @@ __all__ = (
     "RedirectBlock",
     "ReplaceBlock",
     "RequireBlock",
+    "SendBlock",
     "ShortCutRedirectBlock",
     "StopBlock",
     "StrfBlock",

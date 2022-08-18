@@ -61,20 +61,18 @@ def build_node_tree(message: str) -> List[Node]:
         A list of all possible text bracket blocks.
     """
     nodes = []
-    previous = r""
 
     starts = []
     for i, ch in enumerate(message):
-        if ch == "{" and previous != r"\\":
+        if ch == "{" and message[i-1] != r"\\":
             starts.append(i)
-        if ch == "}" and previous != r"\\":
+        if ch == "}" and message[i-1] != r"\\":
             if not starts:
                 continue
             coords = (starts.pop(), i)
             n = Node(coords)
             nodes.append(n)
-
-        previous = ch
+            
     return nodes
 
 
