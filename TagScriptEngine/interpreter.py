@@ -270,6 +270,7 @@ class Interpreter:
         *,
         charlimit: Optional[int] = None,
         dot_parameter: bool = False,
+        process_output: bool = False,
         **kwargs,
     ) -> Response:
         """
@@ -316,7 +317,14 @@ class Interpreter:
             raise
         except Exception as error:
             raise ProcessError(error, response, self) from error
-        return self._return_response(response, output)
+        response = self._return_response(response, output)
+        if process_output:
+            new_resp = self.process(response.body, seed_variables, charlimit=charlimit, dot_paramter=dot_parameter, process_output=False, **kwargs)
+            new_resp.actions.update(response.actions)
+            new_resp.variables.update(response.variabled)
+            new_resp.extra_kwargs.update(response.extra_kwargs)
+            return new_resp
+        return response
 
 
 class AsyncInterpreter(Interpreter):
