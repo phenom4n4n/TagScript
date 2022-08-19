@@ -7,6 +7,7 @@ from discord import Colour, Embed
 from ..exceptions import BadColourArgument, EmbedParseError
 from ..interface import Block
 from ..interpreter import Context
+from ..adapter import StringAdapter
 from .helpers import helper_split, implicit_bool
 
 
@@ -136,9 +137,13 @@ class EmbedBlock(Block):
         "field": add_field,
     }
 
-    @staticmethod
-    def get_embed(ctx: Context) -> Embed:
-        return Embed.from_dict(ctx.response.variables.get("__emb", Embed().to_dict()))
+    def get_embed(self, ctx: Context) -> Embed:
+        emb = ctx.response.variables.get("__emb", "")
+        if emb:
+            return self.text_to_embed(emb.string) 
+        
+        else:
+            return Embed()
 
     @staticmethod
     def value_to_color(value: Optional[Union[int, str]]) -> Colour:
@@ -172,7 +177,7 @@ class EmbedBlock(Block):
             if color := self.value_to_color(color):
                 embed.color = color
             return embed
-
+        
     @classmethod
     def update_embed(cls, embed: Embed, attribute: str, value: str) -> Embed:
         handler = cls.ATTRIBUTE_HANDLERS[attribute]
@@ -194,7 +199,7 @@ class EmbedBlock(Block):
             return str(error)
         if length > 6000:
             return f"`MAX EMBED LENGTH REACHED ({length}/6000)`"
-        ctx.response.variables["__emb"] = embed
+        ctx.response.variables["__emb"] = StringAdapter(json.dumps(embed.to_dict()))
         return ""
 
     def process(self, ctx: Context) -> Optional[str]:

@@ -19,8 +19,15 @@ class Sendtest(unittest.TestCase):
         resp = self.engine.process(
             """
             {embed(title):Hello} {embed(description):World}
-            {send(embed):{__emb}} {send(message):abcd}
+            {send(message):abcd}
             {embed({"title": "test", "description":"Test", "author": {"name": "test", "url": "test"}})}
             {send(embed):{__emb}}"""
         )
+        print(resp)
         self.assertEqual(resp.actions, {"send": [{"message": "abcd", "embed": discord.Embed(title="Hello", description="World")}, {"message": "", "embed": discord.Embed(title="test", description="Test").set_author(name="test", url="test")}]})
+        
+if __name__ == "__main__":
+    x = Sendtest()
+    x.setUp()
+    x.test_send()
+    x.tearDown()
