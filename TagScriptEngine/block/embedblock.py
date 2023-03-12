@@ -44,7 +44,7 @@ def add_field(embed: Embed, _: str, payload: str):
         inline = implicit_bool(_inline)
         if inline is None:
             raise EmbedParseError(
-                f"`inline` argument for `add_field` is not a boolean value (_inline)"
+                "`inline` argument for `add_field` is not a boolean value (_inline)"
             )
     except ValueError:
         try:
@@ -54,6 +54,16 @@ def add_field(embed: Embed, _: str, payload: str):
         inline = False
     embed.add_field(name=name, value=value, inline=inline)
 
+def set_footer(embed: Embed, _: str, payload: str):
+    try:
+        text, icon_url = helper_split(payload, 2)
+    except ValueError:
+        text = payload
+        icon_url = None
+    if icon_url:
+        embed.set_footer(text=text, icon_url=icon_url)
+    else:
+        embed.set_footer(text=text)
 
 class EmbedBlock(Block):
     """
@@ -93,6 +103,7 @@ class EmbedBlock(Block):
     *   ``url``
     *   ``thumbnail``
     *   ``image``
+    *   ``footer``
     *   ``field`` - (See below)
 
     Adding a field to an embed requires the payload to be split by ``|``, into
@@ -112,6 +123,7 @@ class EmbedBlock(Block):
         {embed(title):Rules}
         {embed(description):Follow these rules to ensure a good experience in our server!}
         {embed(field):Rule 1|Respect everyone you speak to.|false}
+        {embed(footer):Thanks for reading!|{guild(icon)}}
 
     Both methods can be combined to create an embed in a tag.
     The following tagscript uses JSON to create an embed with fields and later
