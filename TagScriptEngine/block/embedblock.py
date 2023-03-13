@@ -53,6 +53,7 @@ def add_field(embed: Embed, _: str, payload: str):
         inline = False
     embed.add_field(name=name, value=value, inline=inline)
 
+
 def set_footer(embed: Embed, _: str, payload: str):
     data = helper_split(payload, 2)
     if data is None:
@@ -60,6 +61,7 @@ def set_footer(embed: Embed, _: str, payload: str):
     else:
         text, icon_url = data
         embed.set_footer(text=text, icon_url=icon_url)
+
 
 class EmbedBlock(Block):
     """
