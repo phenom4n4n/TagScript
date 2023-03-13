@@ -11,6 +11,7 @@ from .verb import Verb
 __version__ = "2.6.5"
 
 
+
 class VersionInfo(namedtuple("VersionInfo", "major minor micro")):
     """
     Version information.
