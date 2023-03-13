@@ -49,21 +49,18 @@ def add_field(embed: Embed, _: str, payload: str):
     except ValueError:
         try:
             name, value = helper_split(payload, 2)
-        except ValueError as exc:
+        except (ValueError, TypeError) as exc:
             raise EmbedParseError("`add_field` payload was not split by |") from exc
         inline = False
     embed.add_field(name=name, value=value, inline=inline)
 
 def set_footer(embed: Embed, _: str, payload: str):
-    try:
-        text, icon_url = helper_split(payload, 2)
-    except ValueError:
-        text = payload
-        icon_url = None
-    if icon_url:
-        embed.set_footer(text=text, icon_url=icon_url)
+    data = helper_split(payload, 2)
+    if data is None:
+        embed.set_footer(text=payload)
     else:
-        embed.set_footer(text=text)
+        text, icon_url = data
+        embed.set_footer(text=text, icon_url=icon_url)
 
 class EmbedBlock(Block):
     """

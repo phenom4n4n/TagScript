@@ -105,7 +105,7 @@ def helper_split(
             return split_string.split("~", *args)
         if "," in split_string:
             return split_string.split(",", *args)
-    return split_string
+    return
 
 
 def helper_parse_list_if(if_string):

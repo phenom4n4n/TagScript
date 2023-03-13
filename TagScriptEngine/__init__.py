@@ -8,7 +8,7 @@ from .interpreter import *
 from .utils import *
 from .verb import Verb
 
-__version__ = "2.6.4"
+__version__ = "2.6.5"
 
 
 class VersionInfo(namedtuple("VersionInfo", "major minor micro")):
