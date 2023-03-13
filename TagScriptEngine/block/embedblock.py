@@ -39,18 +39,17 @@ def set_dynamic_url(embed: Embed, attribute: str, value: str):
 
 
 def add_field(embed: Embed, _: str, payload: str):
+    if (data := helper_split(payload, 3)) is None:
+        raise EmbedParseError("`add_field` payload was not split by |")
     try:
-        name, value, _inline = helper_split(payload, 3)
+        name, value, _inline = data
         inline = implicit_bool(_inline)
         if inline is None:
             raise EmbedParseError(
                 "`inline` argument for `add_field` is not a boolean value (_inline)"
             )
     except ValueError:
-        try:
-            name, value = helper_split(payload, 2)
-        except (ValueError, TypeError) as exc:
-            raise EmbedParseError("`add_field` payload was not split by |") from exc
+        name, value = helper_split(payload, 2)
         inline = False
     embed.add_field(name=name, value=value, inline=inline)
 
