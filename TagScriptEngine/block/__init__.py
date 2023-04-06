@@ -22,6 +22,7 @@ from .strf import StrfBlock
 from .strictvariablegetter import StrictVariableGetterBlock
 from .substr import SubstringBlock
 from .urlencodeblock import URLEncodeBlock
+from .upperlower import LowerBlock, UpperBlock
 
 __all__ = (
     "implicit_bool",
@@ -53,4 +54,6 @@ __all__ = (
     "StrictVariableGetterBlock",
     "SubstringBlock",
     "URLEncodeBlock",
+    "UpperBlock",
+    "LowerBlock",
 )
