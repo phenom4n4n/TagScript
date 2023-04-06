@@ -104,6 +104,8 @@ class MemberAdapter(AttributeAdapter):
         The author's top role.
     roleids
         A list of the author's role IDs, split by spaces.
+    proper
+        The author's username with discriminator.
     """
 
     def update_attributes(self):
@@ -119,6 +121,7 @@ class MemberAdapter(AttributeAdapter):
             "mention": self.object.mention,
             "bot": self.object.bot,
             "top_role": getattr(self.object, "top_role", None),
+            "proper": f"{self.object.name}#{self.object.discriminator}",
         }
         if roleids := getattr(self.object, "_roles", None):
             additional_attributes["roleids"] = " ".join(str(r) for r in roleids)
