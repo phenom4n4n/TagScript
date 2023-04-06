@@ -144,6 +144,7 @@ class EmbedBlock(Block):
         "thumbnail": set_dynamic_url,
         "image": set_dynamic_url,
         "field": add_field,
+        "footer": set_footer,
     }
 
     @staticmethod
