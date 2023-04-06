@@ -20,9 +20,10 @@ class UpperBlock(Block):
         You have entered {lower:{args}}!
         # You have entered HELLO WORLD!
     """
+
     ACCEPTED_NAMES = ("upper","uppercase")
 
-    async def process(self, ctx: Context) -> str:
+    def process(self, ctx: Context) -> str:
         text = str(ctx.verb.parameter).upper()
         return "" if text == "NONE" else text
 
@@ -45,8 +46,9 @@ class LowerBlock(Block):
         You have entered {lower:{args}}!
         # You have entered hello world!
     """
+
     ACCEPTED_NAMES = ("lower","lowercase")
 
-    async def process(self, ctx: Context) -> str:
+    def process(self, ctx: Context) -> str:
         text = str(ctx.verb.parameter).lower()
         return "" if text == "none" else text
