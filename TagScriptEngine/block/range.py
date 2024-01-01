@@ -37,11 +37,12 @@ class RangeBlock(verb_required_block(True, payload=True)):
     def process(self, ctx: Context) -> Optional[str]:
         try:
             spl = ctx.verb.payload.split("-")
-            random.seed(ctx.verb.parameter)
+            rand = random.Random()
+            rand.seed(ctx.verb.parameter)
             if ctx.verb.declaration.lower() == "rangef":
                 lower = float(spl[0])
                 upper = float(spl[1])
-                base = random.randint(lower * 10, upper * 10) / 10
+                base = rand.randint(lower * 10, upper * 10) / 10
                 return str(base)
                 # base = random.randint(lower, upper)
                 # if base == upper:
@@ -54,6 +55,6 @@ class RangeBlock(verb_required_block(True, payload=True)):
             else:
                 lower = int(float(spl[0]))
                 upper = int(float(spl[1]))
-                return str(random.randint(lower, upper))
+                return str(rand.randint(lower, upper))
         except:
             return None
